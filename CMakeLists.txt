@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 14)
 project(acts_tests)
 find_package(ACTS COMPONENTS Core Examples TGeoPlugin DD4hepPlugin)
 
-add_library (TestACTS SHARED SuperSimpleDetector.cpp)
+add_library (TestACTS SHARED SuperSimpleDetector.cpp SimpleDetector.cpp)
 target_include_directories(TestACTS PUBLIC ACTS::ACTSCore)
 target_link_libraries (TestACTS PUBLIC  ACTS::ACTSCore)
 

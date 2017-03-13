@@ -9,9 +9,19 @@ MyExtrapolator::MyExtrapolator(std::shared_ptr<const IExtrapolationEngine> exEng
   MyExtrapolator::operator()(const FitMeas_t& m, const TrackParameters& tp) const
   {
     auto exCell = std::make_unique<ExtrapolationCell<TrackParameters>>(tp);
+      //exCell.addConfigurationMode(ExtrapolationMode::CollectMaterial);
+      exCell->addConfigurationMode(ExtrapolationMode::CollectSensitive);
+      exCell->addConfigurationMode(ExtrapolationMode::Destination);
+      exCell->addConfigurationMode(ExtrapolationMode::StopAtBoundary);
+      /*
     exCell->addConfigurationMode(ExtrapolationMode::Destination);
     exCell->addConfigurationMode(ExtrapolationMode::FATRAS);
     exCell->addConfigurationMode(ExtrapolationMode::CollectJacobians);
+    exCell->addConfigurationMode(ExtrapolationMode::CollectPassive);
+    exCell->addConfigurationMode(ExtrapolationMode::CollectBoundary);
+    exCell->addConfigurationMode(ExtrapolationMode::CollectMaterial);
+    exCell->addConfigurationMode(ExtrapolationMode::CollectSensitive);
+       */
     const Surface& sf = getSurface(m);
 
     m_exEngine->extrapolate(*exCell, &sf);
@@ -70,7 +80,7 @@ initExtrapolator(const std::shared_ptr<const TrackingGeometry>& geo)
   exEngineConfig.extrapolationEngines = {statEngine};
   auto exEngine = std::make_shared<ExtrapolationEngine>(exEngineConfig);
   exEngine->setLogger(
-      getDefaultLogger("ExtrapolationEngine", Logging::VERBOSE));
+      getDefaultLogger("ExtrapolationEngine", Logging::INFO));
 
   return exEngine;
 };
