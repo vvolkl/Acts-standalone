@@ -2,9 +2,8 @@
 #define ACTSTESTS_SUPERSIMPLEDETECTOR_H
 
 namespace Acts {
-  class TrackingGeometry;
-}
+class TrackingGeometry;
 
 std::shared_ptr<Acts::TrackingGeometry> buildSuperSimpleDetector();
-
+}
 #endif

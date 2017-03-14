@@ -1,9 +1,5 @@
-
-#include <cmath>
-#include <iostream>
-#include <fstream>
-#include <memory>
-#include <random>
+#ifndef KALMANFITUTILS_H
+#define KALMANFITUTILS_H
 #include "ACTS/Detector/TrackingGeometry.hpp"
 #include "ACTS/EventData/Measurement.hpp"
 #include "ACTS/Examples/BuildGenericDetector.hpp"
@@ -21,47 +17,54 @@
 #include "ACTS/Utilities/Definitions.hpp"
 #include "ACTS/Utilities/Logger.hpp"
 #include "ACTS/Utilities/Units.hpp"
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <memory>
+#include <random>
 
 using namespace Acts;
 typedef FittableMeasurement<long int> FitMeas_t;
 template <ParID_t... pars>
 using Meas_t = Measurement<long int, pars...>;
 
-struct MyCache
-{
+struct MyCache {
   std::unique_ptr<const KF::Step<long int>::JacobianMatrix> jacobian;
-  std::unique_ptr<const BoundParameters>                    parameters;
+  std::unique_ptr<const BoundParameters> parameters;
 
-  MyCache()               = default;
+  MyCache() = default;
   MyCache(const MyCache&) = delete;
-  MyCache(MyCache&&)      = default;
+  MyCache(MyCache&&) = default;
 };
 
-class MyExtrapolator
-{
+class MyExtrapolator {
 public:
   MyExtrapolator(std::shared_ptr<const IExtrapolationEngine> exEngine = nullptr);
 
-  MyCache
-  operator()(const FitMeas_t& m, const TrackParameters& tp) const;
+  MyCache operator()(const FitMeas_t& m, const TrackParameters& tp) const;
 
 private:
   std::shared_ptr<const IExtrapolationEngine> m_exEngine;
 };
 
-class NoCalibration
-{
+class NoCalibration {
 public:
-  std::unique_ptr<const FitMeas_t>
-  operator()(const FitMeas_t& m, const BoundParameters&) const;
+  std::unique_ptr<const FitMeas_t> operator()(const FitMeas_t& m, const BoundParameters&) const;
 };
 
-class CacheGenerator
-{
+class CacheGenerator {
 public:
-  std::unique_ptr<KF::Step<long int>>
-  operator()(MyCache m) const;
+  std::unique_ptr<KF::Step<long int>> operator()(MyCache m) const;
 };
 
-std::shared_ptr<IExtrapolationEngine>
-initExtrapolator(const std::shared_ptr<const TrackingGeometry>& geo);
+std::shared_ptr<IExtrapolationEngine> initExtrapolator(const std::shared_ptr<const TrackingGeometry>& geo);
+
+std::vector<FitMeas_t> generateDummyMeasurements(BoundParameters theTrackParameters,
+                                                 std::shared_ptr<IExtrapolationEngine> theExtrapolationEngine,
+                                                 std::shared_ptr<const Acts::TrackingGeometry> geo,
+                                                 const Acts::Layer* startLayer = nullptr,
+                                                 std::ostream& log = std::cout);
+
+void dumpTrackingVolume(const Acts::TrackingVolume* vol);
+void dumpTrackingLayer(const Acts::Layer* layer);
+#endif
