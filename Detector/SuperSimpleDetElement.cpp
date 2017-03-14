@@ -1,13 +1,6 @@
 #include "SuperSimpleDetElement.hpp"
 
-SuperSimpleDetElement::SuperSimpleDetElement(const Identifier identifier,
-                                             std::shared_ptr<Transform3D>
-                                                 transform,
-                                             std::shared_ptr<const CylinderBounds>
-                                                 pBounds,
-                                             double thickness,
-                                             std::shared_ptr<const SurfaceMaterial>
-                                                 material)
+SuperSimpleDetElement::SuperSimpleDetElement(const Identifier identifier, std::shared_ptr<Transform3D> transform, std::shared_ptr<const CylinderBounds> pBounds, double thickness, std::shared_ptr<const SurfaceMaterial> material)
     : DetectorElementBase(),
       m_elementIdentifier(std::move(identifier)),
       m_elementTransform(std::move(transform)),

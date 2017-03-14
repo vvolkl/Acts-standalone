@@ -29,9 +29,9 @@
 #include <memory>
 #include <random>
 
-#include "KalmanFitUtils.h"
-#include "SimpleDetector.hpp"
-#include "SuperSimpleDetector.hpp"
+#include "Utilities/KalmanFitUtils.hpp"
+#include "Detector/SimpleDetector.hpp"
+#include "Detector/SuperSimpleDetector.hpp"
 
 using namespace Acts;
 

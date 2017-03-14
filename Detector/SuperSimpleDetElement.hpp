@@ -26,7 +26,7 @@
 #include <iostream>
 #include <vector>
 
-#include "DetCylinderSurface.hpp"
+#include "Detector/DetCylinderSurface.hpp"
 using namespace Acts;
 
 class SuperSimpleDetElement : public DetectorElementBase {

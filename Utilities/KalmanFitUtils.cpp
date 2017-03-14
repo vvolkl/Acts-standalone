@@ -1,4 +1,4 @@
-#include "KalmanFitUtils.h"
+#include "KalmanFitUtils.hpp"
 
 void dumpTrackingVolume(const Acts::TrackingVolume* vol) {
   std::cout << "Dumping TrackingVolume" << vol->volumeName() << std::endl;
