@@ -22,6 +22,7 @@
 #include <iostream>
 #include <memory>
 #include <random>
+#include <vector>
 
 using namespace Acts;
 typedef FittableMeasurement<long int> FitMeas_t;
@@ -67,4 +68,6 @@ std::vector<FitMeas_t> generateDummyMeasurements(BoundParameters theTrackParamet
 
 void dumpTrackingVolume(const Acts::TrackingVolume* vol);
 void dumpTrackingLayer(const Acts::Layer* layer);
+
+void saveDummyHits(std::ostream& log, std::vector<FitMeas_t> measurements);
 #endif

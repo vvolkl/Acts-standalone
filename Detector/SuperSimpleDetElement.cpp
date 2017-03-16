@@ -7,7 +7,9 @@ SuperSimpleDetElement::SuperSimpleDetElement(const Identifier identifier, std::s
       m_elementSurface(new DetCylinderSurface(pBounds, *this, identifier)),
       m_elementThickness(thickness),
       m_elementSurfaces({m_elementSurface}) {
-  m_elementSurface->setAssociatedMaterial(material);
+      //auto mutableSurface = std::const_pointer_cast<Surface>(m_elementSurface);
+       //   mutableSurface->setAssociatedMaterial(material);
+
 }
 
 ///  Destructor

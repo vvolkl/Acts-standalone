@@ -5,7 +5,6 @@
 #include "ACTS/Tools/CylinderVolumeHelper.hpp"
 #include "ACTS/Tools/LayerArrayCreator.hpp"
 #include "ACTS/Tools/LayerCreator.hpp"
-#include "ACTS/Tools/PassiveLayerBuilder.hpp"
 #include "ACTS/Tools/SurfaceArrayCreator.hpp"
 #include "ACTS/Tools/TrackingGeometryBuilder.hpp"
 #include "ACTS/Tools/TrackingVolumeArrayCreator.hpp"
@@ -52,7 +51,7 @@ public:
 
   /// Identifier
   Identifier identify() const override;
-  void assignIdentifier(const Identifier& identifier) const override{};
+  void assignIdentifier(const Identifier& identifier)  override{};
 
   /// Return local to global transform associated with this identifier
   ///

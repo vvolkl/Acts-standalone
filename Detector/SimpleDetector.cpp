@@ -1,6 +1,5 @@
 
 #include "ACTS/Detector/TrackingGeometry.hpp"
-#include "ACTS/Examples/BuildGenericDetector.hpp"
 #include "ACTS/Examples/GenericLayerBuilder.hpp"
 #include "ACTS/Material/Material.hpp"
 #include "ACTS/Tools/CylinderVolumeBuilder.hpp"
@@ -16,6 +15,8 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+
+#include "Detector/SimpleDetector.hpp"
 
 namespace Acts {
 
@@ -64,6 +65,7 @@ std::vector<Acts::Vector3D> modulePositionsCylinder(double radius,
                                                     double zStagger,
                                                     double moduleHalfLength,
                                                     double lOverlap,
+                                                    double Rstagger,
                                                     const std::pair<int, int>& binningSchema) {
   int nPhiBins = binningSchema.first;
   int nZbins = binningSchema.second;
@@ -76,14 +78,20 @@ std::vector<Acts::Vector3D> modulePositionsCylinder(double radius,
   double zStart = -0.5 * (nZbins - 1) * (2 * moduleHalfLength - lOverlap);
   double zStep = 2 * std::abs(zStart) / (nZbins - 1);
   // loop over the bins
+  double tmp_Rstagger;
   for (size_t zBin = 0; zBin < size_t(nZbins); ++zBin) {
     // prepare z and r
     double moduleZ = zStart + zBin * zStep;
     double moduleR = (zBin % 2) ? radius - 0.5 * zStagger : radius + 0.5 * zStagger;
     for (size_t phiBin = 0; phiBin < size_t(nPhiBins); ++phiBin) {
+      if (phiBin % 2 == 0) {
+        tmp_Rstagger = 0;//-1. * Rstagger;
+      } else {
+        tmp_Rstagger = Rstagger;
+      }
       // calculate the current phi value
       double modulePhi = minPhi + phiBin * phiStep;
-      mPositions.push_back(Vector3D(moduleR * cos(modulePhi), moduleR * sin(modulePhi), moduleZ));
+      mPositions.push_back(Vector3D((moduleR + tmp_Rstagger) * cos(modulePhi), (moduleR + tmp_Rstagger) * sin(modulePhi), moduleZ));
     }
   }
   return mPositions;

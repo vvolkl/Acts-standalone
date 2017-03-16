@@ -9,15 +9,34 @@ add_library (fcc-acts_standalone-detector SHARED Detector/SuperSimpleDetector.cp
 target_include_directories(fcc-acts_standalone-detector PUBLIC ACTS::ACTSCore ${CMAKE_CURRENT_SOURCE_DIR}/Utilities ${CMAKE_CURRENT_SOURCE_DIR}/Detector)
 target_link_libraries (fcc-acts_standalone-detector PUBLIC  ACTS::ACTSCore)
 
-add_library (fcc-acts_standalone-utilites  SHARED Utilities/KalmanFitUtils.cpp Utilities/GenerateDummyMeasurements.cpp)
+add_library (fcc-acts_standalone-utilites  SHARED Utilities/KalmanFitUtils.cpp Utilities/GenerateDummyMeasurements.cpp )
 target_include_directories(fcc-acts_standalone-utilites PUBLIC ACTS::ACTSCore ACTS::ACTSExamples ${CMAKE_CURRENT_SOURCE_DIR}/Utilities)
 target_link_libraries (fcc-acts_standalone-utilites PUBLIC ACTS::ACTSCore)
 
 
-add_executable(main bin/main.cpp)
+add_library(main bin/main.cpp bin/run_eta_slice.cpp)
 target_link_libraries(main fcc-acts_standalone-detector fcc-acts_standalone-utilites ACTS::ACTSCore ACTS::ACTSDD4hepPlugin ACTS::ACTSDD4hepPlugin ACTS::ACTSExamples)
+
+add_executable(run_example_0 jobs/run_example_0.cpp)
+target_link_libraries(run_example_0 main)
+
+add_executable(run_example_1 jobs/run_example_1.cpp)
+target_link_libraries(run_example_1 main)
+
+add_executable(run_example_2 jobs/run_example_2.cpp)
+target_link_libraries(run_example_2 main)
+
+add_executable(run_example_simple jobs/run_example_simple.cpp)
+target_link_libraries(run_example_simple main)
+
+add_executable(run_example_supersimple jobs/run_example_supersimple.cpp)
+target_link_libraries(run_example_supersimple main)
 
 
 add_custom_target(run
-                  COMMAND ./main)
+                  COMMAND ./run_example_supersimple
+                  COMMAND ./run_example_simple
+                  COMMAND ./run_example_0
+                  COMMAND ./run_example_1
+                  COMMAND ./run_example_2)
 

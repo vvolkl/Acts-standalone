@@ -1,4 +1,7 @@
 # Compiled Object files
+*.dat
+*.pdf
+*.png
 *.slo
 *.lo
 *.o

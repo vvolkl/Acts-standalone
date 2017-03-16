@@ -7,7 +7,6 @@
 #include "ACTS/Tools/CylinderVolumeHelper.hpp"
 #include "ACTS/Tools/LayerArrayCreator.hpp"
 #include "ACTS/Tools/LayerCreator.hpp"
-#include "ACTS/Tools/PassiveLayerBuilder.hpp"
 #include "ACTS/Tools/SurfaceArrayCreator.hpp"
 #include "ACTS/Tools/TrackingGeometryBuilder.hpp"
 #include "ACTS/Tools/TrackingVolumeArrayCreator.hpp"
@@ -69,24 +68,56 @@ std::shared_ptr<Acts::TrackingGeometry> buildSuperSimpleDetector() {
   // TrackingVolumeVector cVolumeVector={}, const DetachedVolumeVector dVolumeVector={}, const std::string
   // &volumeName="undefined")
   Acts::LayerArrayCreator lc;
-  auto la = lc.layerArray(layerVector, 0, 500, Acts::arbitrary, Acts::binR);
+  auto la = lc.layerArray(layerVector, 0, 250, Acts::arbitrary, Acts::binR);
   Acts::TrackingVolumePtr trackingVolume = Acts::TrackingVolume::create(
       identityTransform, cylinderVolumeBounds, material, std::move(la), {}, {}, {}, "MyVolume");
-  trackingVolume->sign(Acts::Global);
-  /*
-  volVec.push_back(bp_trackingVolume);
+  //trackingVolume->sign(Acts::Global);
+
+
+  // outer Barrel
+  std::vector<Acts::LayerPtr> olayerVector;
+  std::vector<double> olayerRadii{310, 320, 330, 340};
+  for (double radius : olayerRadii) {
+    std::cout << radius << "\t" << olayerVector.size() << std::endl;
+    std::shared_ptr<Acts::CylinderBounds> ocylinderBounds =
+        std::make_shared<Acts::CylinderBounds>(radius - 5, radius + 5, 500);
+    SuperSimpleDetElement* omyDetElem =
+        new SuperSimpleDetElement(Identifier(radius), identityTransform, ocylinderBounds, 0.0001);
+
+    const Acts::Surface* ocylinderSurface = &(omyDetElem->surface());
+    auto obp = std::make_unique<BinnedArrayXD<const Surface*>>(ocylinderSurface);
+    Acts::LayerPtr ocylinderLayer =
+        Acts::CylinderLayer::create(identityTransform, ocylinderBounds, std::move(obp), 0, nullptr, Acts::passive);
+
+    olayerVector.push_back(ocylinderLayer);
+  }
+  // Module material - X0, L0, A, Z, Rho
+  std::shared_ptr<Acts::CylinderVolumeBounds> ocylinderVolumeBounds =
+      std::make_shared<Acts::CylinderVolumeBounds>(250, 500, 500);
+  // create (std::shared_ptr< Transform3D > htrans, VolumeBoundsPtr volumeBounds, std::shared_ptr< Material > matprop,
+  // std::unique_ptr< const LayerArray > cLayerArray=nullptr, const LayerVector cLayerVector={}, const
+  // TrackingVolumeVector cVolumeVector={}, const DetachedVolumeVector dVolumeVector={}, const std::string
+  // &volumeName="undefined")
+  auto ola = lc.layerArray(olayerVector, 250, 500, Acts::arbitrary, Acts::binR);
+  Acts::TrackingVolumePtr otrackingVolume = Acts::TrackingVolume::create(
+      identityTransform, ocylinderVolumeBounds, material, std::move(ola), {}, {}, {}, "MyOuterVolume");
+  //otrackingVolume->sign(Acts::Global);
+
+  std::vector<Acts::TrackingVolumePtr> volVec;
   volVec.push_back(trackingVolume);
+  volVec.push_back(otrackingVolume);
 
   Acts::TrackingVolumeArrayCreator tv_creator;
   auto tv_array = tv_creator.trackingVolumeArray(volVec, Acts::binR);
   std::shared_ptr<Acts::CylinderVolumeBounds> worldCylinderVolumeBounds =
-  std::make_shared<Acts::CylinderVolumeBounds>(0, 300, 1000);
+  std::make_shared<Acts::CylinderVolumeBounds>(0, 1000, 500);
   std::cout << "tv array size: " <<  tv_array->arrayObjects().size() << std::endl;
   Acts::TrackingVolumePtr worldTrackingVolume = Acts::TrackingVolume::create(identityTransform,
   worldCylinderVolumeBounds, tv_array, "WorldVolume");
-  */
+  //worldTrackingVolume->sign(Acts::Global);
 
-  std::shared_ptr<Acts::TrackingGeometry> trackingGeometry = std::make_shared<Acts::TrackingGeometry>(trackingVolume);
+
+  std::shared_ptr<Acts::TrackingGeometry> trackingGeometry = std::make_shared<Acts::TrackingGeometry>(std::const_pointer_cast<TrackingVolume>(worldTrackingVolume));
   return trackingGeometry;
 }
 }

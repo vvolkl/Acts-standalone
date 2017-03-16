@@ -81,7 +81,7 @@ std::unique_ptr<KF::Step<long int>> CacheGenerator::operator()(MyCache m) const 
 
 std::shared_ptr<IExtrapolationEngine> initExtrapolator(const std::shared_ptr<const TrackingGeometry>& geo) {
   auto propConfig = RungeKuttaEngine<>::Config();
-  propConfig.fieldService = std::make_shared<ConstantBField>(0, 0, 0.006);
+  propConfig.fieldService = std::make_shared<ConstantBField>(0, 0, 0.002);
   auto propEngine = std::make_shared<RungeKuttaEngine<>>(propConfig);
 
   auto matConfig = MaterialEffectsEngine::Config();
@@ -105,7 +105,7 @@ std::shared_ptr<IExtrapolationEngine> initExtrapolator(const std::shared_ptr<con
   exEngineConfig.navigationEngine = navEngine;
   exEngineConfig.extrapolationEngines = {statEngine};
   auto exEngine = std::make_shared<ExtrapolationEngine>(exEngineConfig);
-  exEngine->setLogger(getDefaultLogger("ExtrapolationEngine", Logging::VERBOSE));
+  exEngine->setLogger(getDefaultLogger("ExtrapolationEngine", Logging::INFO));
 
   return exEngine;
 };

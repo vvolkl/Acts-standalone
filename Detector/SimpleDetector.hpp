@@ -26,7 +26,7 @@ std::unique_ptr<Acts::TrackingGeometry> buildSimpleDetector(Logging::Level surfa
 /// @param lOverlap is the overlap of the modules (longitudinal)
 /// @binningSchema is the way the bins are laid out rphi x z
 std::vector<Acts::Vector3D> modulePositionsCylinder(
-    double radius, double zStagger, double moduleHalfLength, double lOverlap, const std::pair<int, int>& binningSchema);
+    double radius, double zStagger, double moduleHalfLength, double lOverlap, double Rstagger, const std::pair<int, int>& binningSchema);
 
 /// Helper method for positioning
 /// @param z is the z position of the ring

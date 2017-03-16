@@ -32,11 +32,11 @@
 #include "Utilities/KalmanFitUtils.hpp"
 #include "Detector/SimpleDetector.hpp"
 #include "Detector/SuperSimpleDetector.hpp"
-#include "main.h"
+#include "bin/main.h"
 
 using namespace Acts;
 
-void run(std::shared_ptr<const Acts::TrackingGeometry> geo, std::string hitfilename, std::string trackparameterfilename) {
+void run_etaslice(std::shared_ptr<const Acts::TrackingGeometry> geo, std::string hitfilename, std::string trackparameterfilename) {
   std::ofstream hitfile;
   std::ofstream trackparameter_file;
   hitfile.open(hitfilename);
@@ -46,27 +46,27 @@ void run(std::shared_ptr<const Acts::TrackingGeometry> geo, std::string hitfilen
   std::uniform_real_distribution<double> std_loc1(1, 5);
   std::uniform_real_distribution<double> std_loc2(0.1, 2);
 
-  dumpTrackingVolume(geo->highestTrackingVolume());
+  //dumpTrackingVolume(geo->highestTrackingVolume());
 
   const Surface* pSurf = geo->getBeamline();
-  std::cout << "beamline ptr: " << pSurf << std::endl;
-  std::cout << geo->highestTrackingVolume()->volumeName() << std::endl;
 
   // loop over parameters
   double theta = M_PI * 0.5;
+  double phi = 0.4;
   double std1, std2, l1, l2;
   //std::vector<double> uncertaintyVector {10, 1, 0.1, 0.01, 0.001};
   std::vector<double> uncertaintyVector{1};
   //std::vector<double> pTVector {1, 5, 10, 100, 1000};
-  std::vector<double> pTVector{1, 1000};
+  std::vector<double> pTVector{1., 1000.};
   std::vector<double> etaVector{};
-  for (double eta = 0.1; eta < 1.2; eta += 1.) {
+  for (double eta = 0.0; eta < 4; eta += 0.01) {
     etaVector.push_back(eta);
   }
   std::vector<double> phiVector{};
-  for (double phi=0; phi < M_PI / 2.; phi += M_PI / 150.) {
+  for (double phi=0; phi < M_PI / 2.; phi += M_PI / 2.) {
     phiVector.push_back(phi);
   }
+  //phiVector.push_back(0.2);
 
   
   for (double eta : etaVector) {
@@ -112,15 +112,22 @@ void run(std::shared_ptr<const Acts::TrackingGeometry> geo, std::string hitfilen
           KF.m_oUpdator = GainMatrixUpdator();
 
           if (vMeasurements.size() > 1) {
+            //std::cout << "start fit" << std::endl;
             auto track = KF.fit(vMeasurements, std::move(startTP));
+            //std::cout << "dump track" << std::endl;
 
             // dump track
             int trackCounter = 0;
             for (const auto& p : track) {
+              //std::cout << "new track state! " << std::endl;
               auto smoothedState = *p->getSmoothedState();
               auto filteredState = *p->getFilteredState();
+              //std::cout << "\t LayerPtr: " << filteredState.referenceSurface().associatedLayer() << std::endl;
+              //std::cout << "\t assoc detel: " << filteredState.referenceSurface().associatedDetectorElement()
+              //          << std::endl;
               if (true) {  // trackCounter == track.size() - 1) {
                 // std::cout << *p->getCalibratedMeasurement() << std::endl;
+                //std::cout << smoothedState << std::endl;
                 // std::cout << smoothedState.parameters()[4] << std::endl;
                 auto cov = *smoothedState.covariance();
                 double fitres_pt = std::sqrt(smoothedState.momentum().x() * smoothedState.momentum().x() +
