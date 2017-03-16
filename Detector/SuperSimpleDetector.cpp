@@ -70,8 +70,9 @@ std::shared_ptr<Acts::TrackingGeometry> buildSuperSimpleDetector() {
   Acts::LayerArrayCreator lc;
   auto la = lc.layerArray(layerVector, 0, 250, Acts::arbitrary, Acts::binR);
   Acts::TrackingVolumePtr trackingVolume = Acts::TrackingVolume::create(
-      identityTransform, cylinderVolumeBounds, material, std::move(la), {}, {}, {}, "MyVolume");
+      identityTransform, cylinderVolumeBounds, material, std::move(la), /*layerVector*/ {}, {}, {}, "MyVolume");
   //trackingVolume->sign(Acts::Global);
+  std::const_pointer_cast<TrackingVolume>(trackingVolume)->sign(Acts::Global);
 
 
   // outer Barrel
@@ -117,7 +118,7 @@ std::shared_ptr<Acts::TrackingGeometry> buildSuperSimpleDetector() {
   //worldTrackingVolume->sign(Acts::Global);
 
 
-  std::shared_ptr<Acts::TrackingGeometry> trackingGeometry = std::make_shared<Acts::TrackingGeometry>(std::const_pointer_cast<TrackingVolume>(worldTrackingVolume));
+  std::shared_ptr<Acts::TrackingGeometry> trackingGeometry = std::make_shared<Acts::TrackingGeometry>(std::const_pointer_cast<TrackingVolume>(trackingVolume));
   return trackingGeometry;
 }
 }

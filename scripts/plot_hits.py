@@ -49,9 +49,9 @@ for pt in np.unique(pts):
 
   for f in figures:
     plt.title("Tracker Hits, pT = " + str(pt))
+    plt.savefig(filename.replace(".dat", "_" + f.get_label() + ".png"))
 
 
     print pt;
     print np.unique(dat[:,4], return_counts=True)
 
-plt.show()
