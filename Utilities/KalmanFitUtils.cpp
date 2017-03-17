@@ -105,7 +105,7 @@ std::shared_ptr<IExtrapolationEngine> initExtrapolator(const std::shared_ptr<con
   exEngineConfig.navigationEngine = navEngine;
   exEngineConfig.extrapolationEngines = {statEngine};
   auto exEngine = std::make_shared<ExtrapolationEngine>(exEngineConfig);
-  exEngine->setLogger(getDefaultLogger("ExtrapolationEngine", Logging::INFO));
+  exEngine->setLogger(getDefaultLogger("ExtrapolationEngine", Logging::VERBOSE));
 
   return exEngine;
 };

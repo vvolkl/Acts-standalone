@@ -26,7 +26,7 @@ for pt in np.unique(pts):
   plt.xlabel("x [mm]")
   plt.ylabel("y [mm]")
   plt.xlim(0, 1.1*rmax)
-  plt.ylim(0, -1.1*rmax)
+  plt.ylim( -1.1*rmax, 0)
   plt.axes().set_aspect('equal', 'datalim')
 
   figures.append(plt.figure("r-z"))
@@ -48,10 +48,12 @@ for pt in np.unique(pts):
       plt.plot([0,plt.xlim()[1]], [0, tantheta*plt.xlim()[1]], **kwargs)
 
   for f in figures:
-    plt.title("Tracker Hits, pT = " + str(pt))
+    plt.figure(f.get_label())
+    plt.title("Tracker Hits")
     plt.savefig(filename.replace(".dat", "_" + f.get_label() + ".png"))
 
 
     print pt;
     print np.unique(dat[:,4], return_counts=True)
 
+plt.show()

@@ -17,6 +17,8 @@
 #include "ACTS/Layers/CylinderLayer.hpp"
 #include "ACTS/Material/Material.hpp"
 #include "ACTS/Surfaces/CylinderBounds.hpp"
+#include "ACTS/Surfaces/DiscSurface.hpp"
+#include "ACTS/Surfaces/RadialBounds.hpp"
 #include "ACTS/Tools/LayerArrayCreator.hpp"
 #include "ACTS/Tools/TrackingVolumeArrayCreator.hpp"
 #include "ACTS/Utilities/BinUtility.hpp"
@@ -42,6 +44,13 @@ public:
                         std::shared_ptr<Transform3D>
                             transform,
                         std::shared_ptr<const CylinderBounds>
+                            pBounds,
+                        double thickness,
+                        std::shared_ptr<const SurfaceMaterial> material = nullptr);
+  SuperSimpleDetElement(const Identifier identifier,
+                        std::shared_ptr<Transform3D>
+                            transform,
+                        std::shared_ptr<const RadialBounds>
                             pBounds,
                         double thickness,
                         std::shared_ptr<const SurfaceMaterial> material = nullptr);

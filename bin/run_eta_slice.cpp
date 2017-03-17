@@ -46,27 +46,26 @@ void run_etaslice(std::shared_ptr<const Acts::TrackingGeometry> geo, std::string
   std::uniform_real_distribution<double> std_loc1(1, 5);
   std::uniform_real_distribution<double> std_loc2(0.1, 2);
 
-  //dumpTrackingVolume(geo->highestTrackingVolume());
+  dumpTrackingVolume(geo->highestTrackingVolume());
 
   const Surface* pSurf = geo->getBeamline();
 
   // loop over parameters
   double theta = M_PI * 0.5;
-  double phi = 0.4;
   double std1, std2, l1, l2;
   //std::vector<double> uncertaintyVector {10, 1, 0.1, 0.01, 0.001};
   std::vector<double> uncertaintyVector{1};
   //std::vector<double> pTVector {1, 5, 10, 100, 1000};
-  std::vector<double> pTVector{1., 1000.};
+  std::vector<double> pTVector{ 1000.};
   std::vector<double> etaVector{};
   for (double eta = 0.0; eta < 4; eta += 0.01) {
     etaVector.push_back(eta);
   }
   std::vector<double> phiVector{};
-  for (double phi=0; phi < M_PI / 2.; phi += M_PI / 2.) {
+  for (double phi=0; phi < M_PI / 2.; phi += M_PI / 1.) {
     phiVector.push_back(phi);
   }
-  //phiVector.push_back(0.2);
+  phiVector.push_back(0.2);
 
   
   for (double eta : etaVector) {
@@ -85,8 +84,8 @@ void run_etaslice(std::shared_ptr<const Acts::TrackingGeometry> geo, std::string
 
           // momentum and position
           double x = 0;
-          double y = 0;
-          double z = 0;
+          double y = 1;
+          double z = 5;
           double px = pT * cos(phi);
           double py = pT * sin(phi);
           double pz = pZ;  // pT / tan(theta);
@@ -111,7 +110,7 @@ void run_etaslice(std::shared_ptr<const Acts::TrackingGeometry> geo, std::string
           KF.m_oExtrapolator = MyExtrapolator(exEngine);
           KF.m_oUpdator = GainMatrixUpdator();
 
-          if (vMeasurements.size() > 1) {
+          if (false) { // (vMeasurements.size() > 1) {
             //std::cout << "start fit" << std::endl;
             auto track = KF.fit(vMeasurements, std::move(startTP));
             //std::cout << "dump track" << std::endl;
@@ -141,6 +140,7 @@ void run_etaslice(std::shared_ptr<const Acts::TrackingGeometry> geo, std::string
               //hitfile << eta << "\t" << pT << "\t" << filteredState.position().x() << "\t" << filteredState.position().y()
               //       << "\t" << filteredState.position().z() << std::endl;
               trackCounter++;
+              
             }
           }
         }

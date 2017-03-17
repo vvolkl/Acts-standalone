@@ -17,8 +17,10 @@
 #include "ACTS/Detector/TrackingGeometry.hpp"
 #include "ACTS/Detector/TrackingVolume.hpp"
 #include "ACTS/Layers/CylinderLayer.hpp"
+#include "ACTS/Layers/DiscLayer.hpp"
 #include "ACTS/Material/Material.hpp"
 #include "ACTS/Surfaces/CylinderBounds.hpp"
+#include "ACTS/Surfaces/RadialBounds.hpp"
 #include "ACTS/Tools/LayerArrayCreator.hpp"
 #include "ACTS/Tools/TrackingVolumeArrayCreator.hpp"
 #include "ACTS/Utilities/BinUtility.hpp"
@@ -44,13 +46,16 @@ std::shared_ptr<Acts::TrackingGeometry> buildSuperSimpleDetector() {
 
   // inner barrel
   std::vector<Acts::LayerPtr> layerVector;
+  /*
   std::vector<double> layerRadii{70, 80, 90, 100, 110, 120, 130};
   for (double radius : layerRadii) {
+    Acts::Translation3D translation{0., 0., -radius / 5.};
+    std::shared_ptr<Acts::Transform3D>   transform = std::make_shared<Acts::Transform3D>(translation);
     std::cout << radius << "\t" << layerVector.size() << std::endl;
     std::shared_ptr<Acts::CylinderBounds> cylinderBounds =
-        std::make_shared<Acts::CylinderBounds>(radius - 5, radius + 5, 500);
+        std::make_shared<Acts::CylinderBounds>(radius, 500);
     SuperSimpleDetElement* myDetElem =
-        new SuperSimpleDetElement(Identifier(radius), identityTransform, cylinderBounds, 0.0001);
+        new SuperSimpleDetElement(Identifier(radius), transform, cylinderBounds, 0.0001);
 
     const Acts::Surface* cylinderSurface = &(myDetElem->surface());
     auto bp = std::make_unique<BinnedArrayXD<const Surface*>>(cylinderSurface);
@@ -59,21 +64,51 @@ std::shared_ptr<Acts::TrackingGeometry> buildSuperSimpleDetector() {
 
     layerVector.push_back(cylinderLayer);
   }
+  */
+  // endcaps
+  std::vector<double> layerZs{10, 30,   60, 62, 63,64, 65,70, 90, 110, 250};
+  for (double z: layerZs) {
+    Acts::Translation3D translation{0., 0, z};
+    std::shared_ptr<Acts::Transform3D>   transform = std::make_shared<Acts::Transform3D>(translation);
+
+    std::shared_ptr<Acts::RadialBounds> radialBounds =
+        std::make_shared<Acts::RadialBounds>(10., 120.);
+    SuperSimpleDetElement* myDetElem =
+        new SuperSimpleDetElement(Identifier(z), transform, radialBounds, 0.0001);
+
+
+    const Acts::Surface* cylinderSurface = &(myDetElem->surface());
+    auto bp = std::make_unique<BinnedArrayXD<const Surface*>>(cylinderSurface);
+    Acts::LayerPtr cylinderLayer =
+        Acts::DiscLayer::create(transform, radialBounds, std::move(bp), 0, nullptr, Acts::passive);
+
+    layerVector.push_back(cylinderLayer);
+
+
+  }
+
+
+
   // Module material - X0, L0, A, Z, Rho
   std::shared_ptr<Acts::Material> material = std::make_shared<Acts::Material>(95.7, 465.2, 28.03, 14., 2.32e-3);
   std::shared_ptr<Acts::CylinderVolumeBounds> cylinderVolumeBounds =
-      std::make_shared<Acts::CylinderVolumeBounds>(50, 135, 500);
+      std::make_shared<Acts::CylinderVolumeBounds>(1500, 1700);
   // create (std::shared_ptr< Transform3D > htrans, VolumeBoundsPtr volumeBounds, std::shared_ptr< Material > matprop,
   // std::unique_ptr< const LayerArray > cLayerArray=nullptr, const LayerVector cLayerVector={}, const
   // TrackingVolumeVector cVolumeVector={}, const DetachedVolumeVector dVolumeVector={}, const std::string
   // &volumeName="undefined")
   Acts::LayerArrayCreator lc;
-  auto la = lc.layerArray(layerVector, 0, 250, Acts::arbitrary, Acts::binR);
+  auto la = lc.layerArray(layerVector, 0, 250, Acts::arbitrary, Acts::binZ);
   Acts::TrackingVolumePtr trackingVolume = Acts::TrackingVolume::create(
-      identityTransform, cylinderVolumeBounds, material, std::move(la), /*layerVector*/ {}, {}, {}, "MyVolume");
-  //trackingVolume->sign(Acts::Global);
+      identityTransform, cylinderVolumeBounds, material,
+      // nullptr, 
+      std::move(la),
+       //layerVector,
+        {}, 
+        {}, {}, "MyVolume");
   std::const_pointer_cast<TrackingVolume>(trackingVolume)->sign(Acts::Global);
 
+  /*
 
   // outer Barrel
   std::vector<Acts::LayerPtr> olayerVector;
@@ -117,6 +152,7 @@ std::shared_ptr<Acts::TrackingGeometry> buildSuperSimpleDetector() {
   worldCylinderVolumeBounds, tv_array, "WorldVolume");
   //worldTrackingVolume->sign(Acts::Global);
 
+  */
 
   std::shared_ptr<Acts::TrackingGeometry> trackingGeometry = std::make_shared<Acts::TrackingGeometry>(std::const_pointer_cast<TrackingVolume>(trackingVolume));
   return trackingGeometry;

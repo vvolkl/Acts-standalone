@@ -11,6 +11,17 @@ SuperSimpleDetElement::SuperSimpleDetElement(const Identifier identifier, std::s
        //   mutableSurface->setAssociatedMaterial(material);
 
 }
+SuperSimpleDetElement::SuperSimpleDetElement(const Identifier identifier, std::shared_ptr<Transform3D> transform, std::shared_ptr<const RadialBounds> pBounds, double thickness, std::shared_ptr<const SurfaceMaterial> material)
+    : DetectorElementBase(),
+      m_elementIdentifier(std::move(identifier)),
+      m_elementTransform(std::move(transform)),
+      m_elementSurface(new DiscSurface(pBounds, *this, identifier)),
+      m_elementThickness(thickness),
+      m_elementSurfaces({m_elementSurface}) {
+      //auto mutableSurface = std::const_pointer_cast<Surface>(m_elementSurface);
+       //   mutableSurface->setAssociatedMaterial(material);
+
+}
 
 ///  Destructor
 SuperSimpleDetElement::~SuperSimpleDetElement() { /*nop */
