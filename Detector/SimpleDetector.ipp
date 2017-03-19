@@ -49,23 +49,24 @@ MaterialProperties pcmProperties(1., 95.7, 465.2, 28.03, 14., 2.32e-3);
 Material pcMaterial(95.7, 465.2, 28.03, 14., 2.32e-3);
 
 // standard, an approach envelope
-plbConfig.approachSurfaceEnvelope = 0.5;
+plbConfig.approachSurfaceEnvelope = 5.;
 
 plbConfig.centralLayerBinMultipliers = {1, 1};
-plbConfig.centralLayerRadii = {25., 60, 100};
-plbConfig.centralLayerEnvelopes = {pcEnvelope, pcEnvelope, pcEnvelope};
-plbConfig.centralLayerMaterialConcentration = {1, 1, 1};
-plbConfig.centralLayerMaterialProperties = {pcmProperties, pcmProperties, pcmProperties};
-plbConfig.centralModuleBinningSchema = {{14, 13}, {16, 13}, {26,13}};
-plbConfig.centralModuleTiltPhi = {0.1, 0.0, 0.1};
-//plbConfig.centralModuleTiltPhi = {0.0, 0.0, 0.0};
-plbConfig.centralModuleHalfX = {6.4, 10.5, 12.8};//{6.4, 12.8, 12.8};
-plbConfig.centralModuleHalfY = {32., 32., 32};
-plbConfig.centralModuleThickness = {0.15, 0.05, 0.15};
-plbConfig.centralModuleReadoutBinsX = {336, 336, 226};
-plbConfig.centralModuleReadoutBinsY = {1280, 1280, 1280};
-plbConfig.centralModuleReadoutSide = {-1, -1, -1};
-plbConfig.centralModuleLorentzAngle = {0.12, 0.12, 0.12};
+plbConfig.centralLayerRadii = {25., 60, 100, 205, 325, 450,};
+plbConfig.centralModuleBinningSchema = {{14, 20}, {16, 20}, {26,20}, {26,20}, {42, 20}, {56, 20}};
+plbConfig.centralModuleHalfX = {6.4, 12.8, 12.8, 25.6, 25.6, 25.6};
+
+size_t l_numLayers = plbConfig.centralModuleBinningSchema.size();
+plbConfig.centralLayerEnvelopes = {pcEnvelope, pcEnvelope, pcEnvelope, pcEnvelope, pcEnvelope, pcEnvelope};
+plbConfig.centralLayerMaterialConcentration = std::vector<int>(l_numLayers, 1);
+plbConfig.centralLayerMaterialProperties = {pcmProperties, pcmProperties, pcmProperties, pcmProperties, pcmProperties, pcmProperties};
+plbConfig.centralModuleTiltPhi = std::vector<double>(l_numLayers,0.);
+plbConfig.centralModuleHalfY = std::vector<double>(l_numLayers, 41.);
+plbConfig.centralModuleThickness = {0.15, 0.05, 0.15, 0.15, 0.15, 0.15};
+plbConfig.centralModuleReadoutBinsX = {336, 336, 226, 226, 226,226};
+plbConfig.centralModuleReadoutBinsY = {1280, 1280, 1280, 1280, 1280, 1280};
+plbConfig.centralModuleReadoutSide = {-1, -1, -1, -1, -1,-1};
+plbConfig.centralModuleLorentzAngle = {0.12, 0.12, 0.12, 0.12, 0.12, 0.12};
 // no frontside/backside
 plbConfig.centralModuleFrontsideStereo = {};
 plbConfig.centralModuleBacksideStereo = {};
@@ -75,10 +76,10 @@ std::vector<std::vector<Vector3D>> centralModulePositions;
 for (size_t plb = 0; plb < plbConfig.centralLayerRadii.size(); ++plb) {
   // call the helper function
   centralModulePositions.push_back(modulePositionsCylinder(plbConfig.centralLayerRadii[plb],
-                                                           0.0,  // 1 mm stagger
+                                                           0.5,  // 1 mm stagger
                                                            plbConfig.centralModuleHalfY[plb],
-                                                           0.,  // 2 mm module overlap
-                                                           0.,
+                                                           1.,  // 2 mm module overlap
+                                                           1.,
                                                            plbConfig.centralModuleBinningSchema[plb]));
 }
 plbConfig.centralModulePositions = centralModulePositions;
@@ -99,60 +100,63 @@ auto pixelVolumeBuilder =
     std::make_shared<CylinderVolumeBuilder>(pvbConfig, getDefaultLogger("PixelVolumeBuilder", volumeLLevel));
 // add to the list of builders
 volumeBuilders.push_back(pixelVolumeBuilder);
-  // STRIPS
+
+  // OUTER BARREL
   // ----------------------------------------------------------------------------
   // configure short strip layer builder
-  GenericLayerBuilder::Config sslbConfig;
-  sslbConfig.layerCreator        = layerCreator;
-  sslbConfig.layerIdentification = "SStrip";
+  GenericLayerBuilder::Config olbConfig;
+  olbConfig.layerCreator        = layerCreator;
+  olbConfig.layerIdentification = "OuterBarrel";
   // fill necessary vectors for configuration
   //-------------------------------------------------------------------------------------
   // some prep work
   // envelope double
-  std::pair<double, double> ssEnvelope(2., 2.);
+  std::pair<double, double> oEnvelope(2., 2.);
   // Layer material properties - thickness, X0, L0, A, Z, Rho
-  MaterialProperties ssmProperties(1., 95.7, 465.2, 28.03, 14., 2.32e-3);
+  MaterialProperties omProperties(1., 95.7, 465.2, 28.03, 14., 2.32e-3);
   // Module material - X0, L0, A, Z, Rho
-  Material ssMaterial(95.7, 465.2, 28.03, 14., 2.32e-3);
+  Material oMaterial(95.7, 465.2, 28.03, 14., 2.32e-3);
+  olbConfig.approachSurfaceEnvelope = 5.;
 
   // configure the central barrel
-  sslbConfig.centralLayerBinMultipliers = {1, 1};
-  sslbConfig.centralLayerRadii          = {205, 325, 450};
-  sslbConfig.centralLayerEnvelopes      = {ssEnvelope, ssEnvelope, ssEnvelope};
-  sslbConfig.centralLayerMaterialConcentration = {1, 1, 1};
-  sslbConfig.centralLayerMaterialProperties
-      = {ssmProperties, ssmProperties, ssmProperties};
-  sslbConfig.centralModuleBinningSchema = {{26, 12}, {42, 12}, {56, 12}};
-  sslbConfig.centralModuleTiltPhi       = {0.0, 0.0, 0.0};
-  sslbConfig.centralModuleHalfX         = {25.6, 25.6, 25.6};
-  sslbConfig.centralModuleHalfY         = {68., 68., 68.};
-  sslbConfig.centralModuleThickness     = {0.25, 0.25, 0.25};
+  olbConfig.centralLayerBinMultipliers = {1, 1};
+  olbConfig.centralLayerRadii          = {607.6, 807.3, 969.7};
+  olbConfig.centralModuleBinningSchema = {{38, 30}, {50, 30}, {60, 30}};
+  olbConfig.centralLayerMaterialConcentration = {1, 1, 1};
+  olbConfig.centralLayerMaterialProperties
+      = {omProperties, omProperties, omProperties};
+  l_numLayers = olbConfig.centralLayerRadii.size();
+  olbConfig.centralLayerEnvelopes      = std::vector<std::pair<double,double>>(l_numLayers, oEnvelope);
+  olbConfig.centralModuleTiltPhi       = {0.0, 0.0, 0.0};
+  olbConfig.centralModuleHalfX         = std::vector<double>(l_numLayers, 51.2);
+  olbConfig.centralModuleHalfY         = std::vector<double>(l_numLayers, 51.2);
+  olbConfig.centralModuleThickness     = {0.25, 0.25, 0.25};
 
-  sslbConfig.centralModuleReadoutBinsX = {728, 728, 728};  // 50 um pitch
-  sslbConfig.centralModuleReadoutBinsY = {85, 85, 85};     // 1.6 mm strixels
-  sslbConfig.centralModuleReadoutSide  = {1, 1, 1};
-  sslbConfig.centralModuleLorentzAngle = {0.12, 0.12, 0.12};
+  olbConfig.centralModuleReadoutBinsX = {728, 728, 728};  // 50 um pitch
+  olbConfig.centralModuleReadoutBinsY = {85, 85, 85};     // 1.6 mm strixels
+  olbConfig.centralModuleReadoutSide  = {1, 1, 1};
+  olbConfig.centralModuleLorentzAngle = {0.12, 0.12, 0.12};
 
-  sslbConfig.centralModuleMaterial
-      = {ssMaterial, ssMaterial, ssMaterial, ssMaterial};
-  sslbConfig.centralModuleFrontsideStereo = {-0.02, -0.02, -0.02};
-  sslbConfig.centralModuleBacksideStereo  = {0.02, 0.02, 0.02};
-  sslbConfig.centralModuleBacksideGap     = {2., 2., 2.};
+  olbConfig.centralModuleMaterial
+    = {oMaterial, oMaterial, oMaterial};
+  olbConfig.centralModuleFrontsideStereo = {-0.02, -0.02, -0.02};
+  olbConfig.centralModuleBacksideStereo  = {0.02, 0.02, 0.02};
+  olbConfig.centralModuleBacksideGap     = {2., 2., 2.};
   // mPositions
   //std::vector<std::vector<Vector3D>> centralModulePositions;
   centralModulePositions.clear();
-  for (size_t sslb = 0; sslb < sslbConfig.centralLayerRadii.size(); ++sslb) {
+  for (size_t olb = 0; olb < olbConfig.centralLayerRadii.size(); ++olb) {
     // call the helper function
     centralModulePositions.push_back(
-        modulePositionsCylinder(sslbConfig.centralLayerRadii[sslb],
-                                0.0,  // 1 mm stagger
-                                sslbConfig.centralModuleHalfY[sslb],
+        modulePositionsCylinder(olbConfig.centralLayerRadii[olb],
+                                0.5,  // 1 mm stagger
+                                olbConfig.centralModuleHalfY[olb],
 
-                                0.,  // 2 mm module overlap
+                                1.,  // 2 mm module overlap
                                 5.,
-                                sslbConfig.centralModuleBinningSchema[sslb]));
+                                olbConfig.centralModuleBinningSchema[olb]));
   }
-  sslbConfig.centralModulePositions = centralModulePositions;
+  olbConfig.centralModulePositions = centralModulePositions;
 
   // configure the endcaps
   std::vector<double> mrMinHx = {16.4, 24.2, 32.2};
@@ -167,74 +171,74 @@ volumeBuilders.push_back(pixelVolumeBuilder);
 
   std::vector<int>      mPhiBins   = {42, 58, 72};
   std::vector<double>   mThickness = {0.2, 0.2, 0.2};
-  std::vector<Material> mMaterial  = {ssMaterial, ssMaterial, ssMaterial};
+  std::vector<Material> mMaterial  = {oMaterial, oMaterial, oMaterial};
   std::vector<double>   mfStereo   = {-0.02, -0.02, -0.02};
   std::vector<double>   mbStereo   = {0.02, 0.02, 0.02};
   std::vector<double>   mfbGap     = {2., 2., 2.};
 
-  sslbConfig.posnegLayerBinMultipliers = {1, 2};
-  sslbConfig.posnegLayerPositionsZ = {880., 1100., 1300., 1550., 1800., 2200.};
-  size_t nposnegs                  = sslbConfig.posnegLayerPositionsZ.size();
-  sslbConfig.posnegLayerEnvelopeR  = std::vector<double>(nposnegs, 5.);
-  sslbConfig.posnegLayerMaterialConcentration = std::vector<int>(nposnegs, 1);
-  sslbConfig.posnegLayerMaterialProperties
-      = std::vector<MaterialProperties>(nposnegs, ssmProperties);
-  sslbConfig.posnegModuleMinHalfX
+  olbConfig.posnegLayerBinMultipliers = {1, 2};
+  olbConfig.posnegLayerPositionsZ = {1880., 2100., 2300., 2550., 3800., 3200.};
+  size_t nposnegs                  = olbConfig.posnegLayerPositionsZ.size();
+  olbConfig.posnegLayerEnvelopeR  = std::vector<double>(nposnegs, 5.);
+  olbConfig.posnegLayerMaterialConcentration = std::vector<int>(nposnegs, 1);
+  olbConfig.posnegLayerMaterialProperties
+      = std::vector<MaterialProperties>(nposnegs, omProperties);
+  olbConfig.posnegModuleMinHalfX
       = std::vector<std::vector<double>>(nposnegs, mrMinHx);
-  sslbConfig.posnegModuleMaxHalfX
+  olbConfig.posnegModuleMaxHalfX
       = std::vector<std::vector<double>>(nposnegs, mrMaxHx);
-  sslbConfig.posnegModuleHalfY
+  olbConfig.posnegModuleHalfY
       = std::vector<std::vector<double>>(nposnegs, mrHy);
-  sslbConfig.posnegModulePhiBins
+  olbConfig.posnegModulePhiBins
       = std::vector<std::vector<int>>(nposnegs, mPhiBins);
-  sslbConfig.posnegModuleThickness
+  olbConfig.posnegModuleThickness
       = std::vector<std::vector<double>>(nposnegs, mThickness);
 
-  sslbConfig.posnegModuleReadoutBinsX
+  olbConfig.posnegModuleReadoutBinsX
       = std::vector<std::vector<size_t>>(nposnegs, mrReadoutBinsX);
-  sslbConfig.posnegModuleReadoutBinsY
+  olbConfig.posnegModuleReadoutBinsY
       = std::vector<std::vector<size_t>>(nposnegs, mrReadoutBinsY);
-  sslbConfig.posnegModuleReadoutSide
+  olbConfig.posnegModuleReadoutSide
       = std::vector<std::vector<int>>(nposnegs, mrReadoutSide);
-  sslbConfig.posnegModuleLorentzAngle
+  olbConfig.posnegModuleLorentzAngle
       = std::vector<std::vector<double>>(nposnegs, mrLorentzAngle);
 
-  sslbConfig.posnegModuleMaterial
+  olbConfig.posnegModuleMaterial
       = std::vector<std::vector<Material>>(nposnegs, mMaterial);
-  sslbConfig.posnegModuleFrontsideStereo
+  olbConfig.posnegModuleFrontsideStereo
       = std::vector<std::vector<double>>(nposnegs, mfStereo);
-  sslbConfig.posnegModuleBacksideStereo
+  olbConfig.posnegModuleBacksideStereo
       = std::vector<std::vector<double>>(nposnegs, mbStereo);
-  sslbConfig.posnegModuleBacksideGap
+  olbConfig.posnegModuleBacksideGap
       = std::vector<std::vector<double>>(nposnegs, mfbGap);
   // mPositions
   std::vector<std::vector<std::vector<Vector3D>>> posnegModulePositions;
-  for (size_t id = 0; id < sslbConfig.posnegLayerPositionsZ.size(); ++id) {
+  for (size_t id = 0; id < olbConfig.posnegLayerPositionsZ.size(); ++id) {
     posnegModulePositions.push_back(
-        modulePositionsDisc(sslbConfig.posnegLayerPositionsZ[id],
+        modulePositionsDisc(olbConfig.posnegLayerPositionsZ[id],
                             2.0,
                             0.5,
                             220.,
                             500.,
-                            sslbConfig.posnegModulePhiBins[id],
-                            sslbConfig.posnegModuleHalfY[id]));
+                            olbConfig.posnegModulePhiBins[id],
+                            olbConfig.posnegModuleHalfY[id]));
   }
-  sslbConfig.posnegModulePositions = posnegModulePositions;
+  olbConfig.posnegModulePositions = posnegModulePositions;
 
   // define the builder
-  auto sstripLayerBuilder = std::make_shared<GenericLayerBuilder>(
-      sslbConfig, getDefaultLogger("SStripLayerBuilder", layerLLevel));
+  auto obLayerBuilder = std::make_shared<GenericLayerBuilder>(
+      olbConfig, getDefaultLogger("OuterBarrelLayerBuilder", layerLLevel));
   //-------------------------------------------------------------------------------------
   // build the pixel volume
-  CylinderVolumeBuilder::Config ssvbConfig;
-  ssvbConfig.trackingVolumeHelper = cylinderVolumeHelper;
-  ssvbConfig.volumeName           = "SStrip";
-  ssvbConfig.buildToRadiusZero    = false;
-  ssvbConfig.layerBuilder         = sstripLayerBuilder;
-  ssvbConfig.volumeSignature      = 0;
-  auto sstripVolumeBuilder        = std::make_shared<CylinderVolumeBuilder>(
-      ssvbConfig, getDefaultLogger("SStripVolumeBuilder", volumeLLevel));
+  CylinderVolumeBuilder::Config ovbConfig;
+  ovbConfig.trackingVolumeHelper = cylinderVolumeHelper;
+  ovbConfig.volumeName           = "SStrip";
+  ovbConfig.buildToRadiusZero    = false;
+  ovbConfig.layerBuilder         = obLayerBuilder;
+  ovbConfig.volumeSignature      = 0;
+  auto obVolumeBuilder        = std::make_shared<CylinderVolumeBuilder>(
+      ovbConfig, getDefaultLogger("OuterBarrelVolumeBuilder", volumeLLevel));
 
   //-------------------------------------------------------------------------------------
   // add to the list of builders
-  //volumeBuilders.push_back(sstripVolumeBuilder);
+  volumeBuilders.push_back(obVolumeBuilder);

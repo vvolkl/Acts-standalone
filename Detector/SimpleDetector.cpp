@@ -85,7 +85,7 @@ std::vector<Acts::Vector3D> modulePositionsCylinder(double radius,
     double moduleR = (zBin % 2) ? radius - 0.5 * zStagger : radius + 0.5 * zStagger;
     for (size_t phiBin = 0; phiBin < size_t(nPhiBins); ++phiBin) {
       if (phiBin % 2 == 0) {
-        tmp_Rstagger = 0;//-1. * Rstagger;
+        tmp_Rstagger = -1. * Rstagger;
       } else {
         tmp_Rstagger = Rstagger;
       }
