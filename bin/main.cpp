@@ -36,49 +36,33 @@
 
 using namespace Acts;
 
-void run(std::shared_ptr<const Acts::TrackingGeometry> geo, std::string hitfilename, std::string trackparameterfilename) {
+void run(std::shared_ptr<const Acts::TrackingGeometry> geo, std::map<std::string, std::vector<double>> config, std::string name) {
   std::ofstream hitfile;
   std::ofstream trackparameter_file;
-  hitfile.open(hitfilename);
-  trackparameter_file.open(trackparameterfilename);
+  hitfile.open("data/" + name + "_hits.dat");
+  trackparameter_file.open("data/" + name +"_parameters.dat");
   std::default_random_engine e;
   e.seed(123124);
   std::uniform_real_distribution<double> std_loc1(1, 5);
   std::uniform_real_distribution<double> std_loc2(0.1, 2);
 
-  dumpTrackingVolume(geo->highestTrackingVolume());
+  //dumpTrackingVolume(geo->highestTrackingVolume());
 
   const Surface* pSurf = geo->getBeamline();
   std::cout << "beamline ptr: " << pSurf << std::endl;
   std::cout << geo->highestTrackingVolume()->volumeName() << std::endl;
 
   // loop over parameters
-  double theta = M_PI * 0.5;
-  double std1, std2, l1, l2;
-  //std::vector<double> uncertaintyVector {10, 1, 0.1, 0.01, 0.001};
-  std::vector<double> uncertaintyVector{1};
-  //std::vector<double> pTVector {1, 5, 10, 100, 1000};
-  std::vector<double> pTVector{1, 1000};
-  std::vector<double> etaVector{};
-  for (double eta = 0.1; eta < 1.2; eta += 1.) {
-    etaVector.push_back(eta);
-  }
-  std::vector<double> phiVector{};
-  for (double phi=0; phi < M_PI / 2.; phi += M_PI / 150.) {
-    phiVector.push_back(phi);
-  }
-
-  
-  for (double eta : etaVector) {
+  for (double eta : config["eta"]) {
     std::cout << "eta: " <<  eta << std::endl;
     double tanhEtaSq = std::tanh(eta) * std::tanh(eta);
-    for (double pT : pTVector) {
+    for (double pT : config["pT"]) {
       double pZ = std::sqrt(pT * pT * tanhEtaSq / (1. - tanhEtaSq));
-      for (double std1 : uncertaintyVector) {
-        for (double phi: phiVector) {
+      for (double std1 : config["std1"]) {
+        for (double phi: config["phi"]) {
 
           /* -------------------------- Parameter construction ---------------- */
-          std2 = std1;
+          double std2 = std1;
           std::normal_distribution<double> g(0, 0.000001);
           std::normal_distribution<double> g2(0, std2);
           // pT += g2(e);

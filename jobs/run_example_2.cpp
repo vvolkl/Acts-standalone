@@ -7,8 +7,17 @@
 int main() {
     std::shared_ptr<const Acts::TrackingGeometry> geo = 
     Acts::buildGenericDetector(Acts::Logging::VERBOSE, Acts::Logging::VERBOSE, Acts::Logging::VERBOSE, 2);
-    run(geo, "hitfile_example2.dat", "parameterfile_example2.dat");
-    run_etaslice(geo, "hitfile_example2_etaslice.dat", "parameterfile_example_2_etaslice.dat");
+
+    {
+      std::map<std::string, std::vector<double>> config;
+      #include "phi_slice.ipp"
+      run(geo, config, "example2_phislice");
+    }
+    {
+      std::map<std::string, std::vector<double>> config;
+      #include "eta_slice.ipp"
+      run(geo, config, "example2_etaslice");
+    }
 
   return 0;
 }

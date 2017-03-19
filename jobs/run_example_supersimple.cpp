@@ -8,8 +8,17 @@
 int main() {
     std::shared_ptr<const Acts::TrackingGeometry> geo = 
     Acts::buildSuperSimpleDetector();
-    run(geo, "hitfile_example_supersimple.dat", "parameterfile_example_supersimple.dat");
-    run_etaslice(geo, "hitfile_example_supersimple_etaslice.dat", "parameterfile_example_supersimple_etaslice.dat");
+
+    {
+      std::map<std::string, std::vector<double>> config;
+      #include "phi_slice.ipp"
+      run(geo, config, "exampleSuperSimple_phislice");
+    }
+    {
+      std::map<std::string, std::vector<double>> config;
+      #include "eta_slice.ipp"
+      run(geo, config, "exampleSuperSimple_etaslice");
+    }
 
   return 0;
 }
