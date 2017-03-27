@@ -36,6 +36,7 @@ for filename in sys.argv[1:]:
     plt.xlim(0, np.amax(z)*1.1)
     plt.ylim(0, rmax*1.1)
 
+    # draw eta grid # draw eta grid # draw eta grid 
     for eta in np.arange(0,5.1,0.2):
       if eta > 0:
         tantheta = np.tan( 2* np.arctan( np.exp(-1*eta)))
@@ -52,8 +53,11 @@ for filename in sys.argv[1:]:
       plt.title("Tracker Hits")
       plt.savefig(filename.replace(".dat", "_" + f.get_label() + ".png"))
 
+    plt.figure("hitcount") 
+    print pt;
+    count_data = np.unique(dat[:,4], return_counts=True)[1]
+    plt.plot( count_data, ls='steps', label=pt)
+    plt.legend(title=r'$p_T [GeV]$')
 
-      print pt;
-      print np.unique(dat[:,4], return_counts=True)
 
 plt.show()

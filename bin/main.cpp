@@ -1,7 +1,5 @@
 // This file is part of the ACTS project.
-//
-// Copyright (C) 2016 ACTS project team
-//
+// // Copyright (C) 2016 ACTS project team //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -37,6 +35,7 @@
 using namespace Acts;
 
 void run(std::shared_ptr<const Acts::TrackingGeometry> geo, std::map<std::string, std::vector<double>> config, std::string name) {
+  bool verbose = true;
   std::ofstream hitfile;
   std::ofstream trackparameter_file;
   hitfile.open("data/" + name + "_hits.dat");
@@ -54,9 +53,11 @@ void run(std::shared_ptr<const Acts::TrackingGeometry> geo, std::map<std::string
 
   // loop over parameters
   for (double eta : config["eta"]) {
-    std::cout << "eta: " <<  eta << std::endl;
+    
+    if (verbose) std::cout << "eta: " <<  eta << std::endl;
     double tanhEtaSq = std::tanh(eta) * std::tanh(eta);
     for (double pT : config["pT"]) {
+      if (verbose) std::cout << "\t pT:" << pT << std::endl;
       double pZ = std::sqrt(pT * pT * tanhEtaSq / (1. - tanhEtaSq));
       for (double std1 : config["std1"]) {
         for (double phi: config["phi"]) {
@@ -95,7 +96,7 @@ void run(std::shared_ptr<const Acts::TrackingGeometry> geo, std::map<std::string
           KF.m_oExtrapolator = MyExtrapolator(exEngine);
           KF.m_oUpdator = GainMatrixUpdator();
 
-          if (vMeasurements.size() > 1) {
+          if (vMeasurements.size() > 3) {
             auto track = KF.fit(vMeasurements, std::move(startTP));
 
             // dump track
@@ -103,7 +104,7 @@ void run(std::shared_ptr<const Acts::TrackingGeometry> geo, std::map<std::string
             for (const auto& p : track) {
               auto smoothedState = *p->getSmoothedState();
               auto filteredState = *p->getFilteredState();
-              if (true) {  // trackCounter == track.size() - 1) {
+              if ( trackCounter == track.size() - 1) {
                 // std::cout << *p->getCalibratedMeasurement() << std::endl;
                 // std::cout << smoothedState.parameters()[4] << std::endl;
                 auto cov = *smoothedState.covariance();

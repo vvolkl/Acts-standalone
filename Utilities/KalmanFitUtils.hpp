@@ -70,4 +70,5 @@ void dumpTrackingVolume(const Acts::TrackingVolume* vol);
 void dumpTrackingLayer(const Acts::Layer* layer);
 
 void saveDummyHits(std::ostream& log, std::vector<FitMeas_t> measurements);
+void read_config(std::string filename, std::map<std::string, std::vector<double>>& config);
 #endif
