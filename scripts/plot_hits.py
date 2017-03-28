@@ -56,7 +56,7 @@ for filename in sys.argv[1:]:
     plt.figure("hitcount") 
     print pt;
     count_data = np.unique(dat[:,4], return_counts=True)[1]
-    plt.plot( count_data, ls='steps', label=pt)
+    plt.plot(np.linspace(0,6, len(count_data)), count_data, ls='steps', label=pt)
     plt.legend(title=r'$p_T [GeV]$')
 
 

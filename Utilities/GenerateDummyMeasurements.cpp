@@ -19,6 +19,8 @@ std::vector<FitMeas_t> generateDummyMeasurements(BoundParameters theTrackParamet
   // identifier
   long int id = 0;
 
+    Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, "\t ", "\t ", "", "", "", "");
+
   for (const auto& step : exCell.extrapolationSteps) {
     const auto& tp = step.parameters;
 
@@ -27,6 +29,11 @@ std::vector<FitMeas_t> generateDummyMeasurements(BoundParameters theTrackParamet
     if (tp->referenceSurface().type() == Surface::Plane || tp->referenceSurface().type() == Surface::Disc) {
     }
     if (detPtr != nullptr) {
+    auto cov2 = tp->covariance();
+    std::cout << "parameters \t" 
+     << (tp->parameters()).format(CommaInitFmt) << std::endl;
+
+    std::cout << "covariance \t"  << (*cov2).format(CommaInitFmt) << std::endl;
       log << tp->position().x() << "\t" << tp->position().y()
              << "\t" << tp->position().z() << "\t" << pT << "\t" <<  theTrackParameters.momentum().z() <<   std::endl;
 
