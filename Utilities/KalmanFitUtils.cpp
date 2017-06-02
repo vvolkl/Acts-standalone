@@ -55,6 +55,7 @@ MyCache MyExtrapolator::operator()(const FitMeas_t& m, const TrackParameters& tp
   exCell->addConfigurationMode(ExtrapolationMode::Destination);
   exCell->addConfigurationMode(ExtrapolationMode::FATRAS);
   exCell->addConfigurationMode(ExtrapolationMode::CollectJacobians);
+  //(*exCell).pathLimit=500;
   const Surface& sf = getSurface(m);
 
   m_exEngine->extrapolate(*exCell, &sf);

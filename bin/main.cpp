@@ -82,13 +82,20 @@ void run(std::shared_ptr<const Acts::TrackingGeometry> geo, std::map<std::string
           // start covariance matrix
           auto startCov = std::make_unique<ActsSymMatrix<ParValue_t, NGlobalPars>>(
               ActsSymMatrix<ParValue_t, NGlobalPars>::Identity());
-          (*startCov)(4, 4) = std2 * std2;
+          (*startCov) = (*startCov) * 0.0001;
+          //(*startCov)(0,0) = 22;
+          //(*startCov)(1,1) = 33;
+          //(*startCov)(2,2) = 2;
+          //(*startCov)(3,3) = 2;
+          //(*startCov)(4, 4) = 1;
           auto startTP =
               std::make_unique<BoundParameters>(std::move(startCov), std::move(pos), std::move(mom), q, *pSurf);
           /* ------------------------- */
 
           auto exEngine = initExtrapolator(geo);
           std::vector<FitMeas_t> vMeasurements = generateDummyMeasurements(*startTP, exEngine, geo, nullptr, hitfile);
+
+          std::cout << "created " << vMeasurements.size() << " Dummy-Measurements..." << std::endl;
 
           KalmanFitter<MyExtrapolator, CacheGenerator, NoCalibration, GainMatrixUpdator> KF;
           KF.m_oCacheGenerator = CacheGenerator();
@@ -97,27 +104,45 @@ void run(std::shared_ptr<const Acts::TrackingGeometry> geo, std::map<std::string
           KF.m_oUpdator = GainMatrixUpdator();
 
           if (vMeasurements.size() > 3) {
-            auto track = KF.fit(vMeasurements, std::move(startTP));
+            Vector3D posf(x, y, z);
+            Vector3D momf(px*1.1, py, pz);
+
+            // start covariance matrix
+            auto startCovf = std::make_unique<ActsSymMatrix<ParValue_t, NGlobalPars>>(
+                ActsSymMatrix<ParValue_t, NGlobalPars>::Identity());
+            (*startCovf) = (*startCovf) * 0.00001;
+            //(*startCovf)(0,0) = 22;
+          // (*startCovf)(1,1) = 10;
+            //(*startCovf)(2,2) = 2;
+            //(*startCovf)(3,3) = 2;
+            //(*startCovf)(4, 4) = 1;
+            auto startTPf =
+                std::make_unique<BoundParameters>(std::move(startCovf), std::move(posf), std::move(momf), q, *pSurf);
+
+            std::cout << " start fit..." << std::endl;
+            auto track = KF.fit(vMeasurements, std::move(startTPf));
 
             // dump track
             int trackCounter = 0;
             for (const auto& p : track) {
+              std::cout << "trackState " << trackCounter << "... " << std::endl;
               auto smoothedState = *p->getSmoothedState();
               auto filteredState = *p->getFilteredState();
               if ( trackCounter == track.size() - 1) {
                 // std::cout << *p->getCalibratedMeasurement() << std::endl;
-                // std::cout << smoothedState.parameters()[4] << std::endl;
+                 std::cout << "smoothedStateParameters: " << smoothedState.parameters() << std::endl;
                 auto cov = *smoothedState.covariance();
+                std::cout << "smoothedStateCovariance: " << cov << std::endl;
                 double fitres_pt = std::sqrt(smoothedState.momentum().x() * smoothedState.momentum().x() +
                                              smoothedState.momentum().y() * smoothedState.momentum().y());
-                // trackparameter_file << std1 << "\t" << std::sqrt(cov(4,4)) << "\t" << 1. / smoothedState.parameters()[4] <<
+               // trackparameter_file << std1 << "\t" << std::sqrt(cov(4,4)) << "\t" << 1. / smoothedState.parameters()[4] <<
                 // std::endl;
                 trackparameter_file << pT << "\t" << fitres_pt << "\t" << pz << "\t" << smoothedState.momentum().z() << "\t"
                        << std::sqrt(cov(4, 4)) << "\t" << std1 << "\t" << eta << "\t" << vMeasurements.size()
                        << std::endl;
               }
-              //hitfile << eta << "\t" << pT << "\t" << filteredState.position().x() << "\t" << filteredState.position().y()
-              //       << "\t" << filteredState.position().z() << std::endl;
+              //hitfile << eta << "\t" << pT << "\t" << smoothedState.position().x() << "\t" << smoothedState.position().y()
+              //       << "\t" << smoothedState.position().z() << std::endl;
               trackCounter++;
             }
           }

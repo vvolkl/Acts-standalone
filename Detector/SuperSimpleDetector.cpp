@@ -44,40 +44,20 @@ std::shared_ptr<Acts::TrackingGeometry> buildSuperSimpleDetector() {
   std::shared_ptr<Acts::Transform3D> identityTransform = std::make_shared<Acts::Transform3D>();
   identityTransform->setIdentity();
 
-  // inner barrel
   std::vector<Acts::LayerPtr> layerVector;
-  /*
-  std::vector<double> layerRadii{70, 80, 90, 100, 110, 120, 130};
-  for (double radius : layerRadii) {
-    Acts::Translation3D translation{0., 0., -radius / 5.};
-    std::shared_ptr<Acts::Transform3D>   transform = std::make_shared<Acts::Transform3D>(translation);
-    std::cout << radius << "\t" << layerVector.size() << std::endl;
-    std::shared_ptr<Acts::CylinderBounds> cylinderBounds =
-        std::make_shared<Acts::CylinderBounds>(radius, 500);
-    SuperSimpleDetElement* myDetElem =
-        new SuperSimpleDetElement(Identifier(radius), transform, cylinderBounds, 0.0001);
-
-    const Acts::Surface* cylinderSurface = &(myDetElem->surface());
-    auto bp = std::make_unique<BinnedArrayXD<const Surface*>>(cylinderSurface);
-    Acts::LayerPtr cylinderLayer =
-        Acts::CylinderLayer::create(identityTransform, cylinderBounds, std::move(bp), 0, nullptr, Acts::passive);
-
-    layerVector.push_back(cylinderLayer);
-  }
-  */
   // endcaps
-  std::vector<double> layerZs{10, 30,   60, 62, 63,64, 65,70, 90, 110, 250};
+  std::vector<double> layerZs{10, 30, 50 , 70, 90, 110};
   for (double z: layerZs) {
     Acts::Translation3D translation{0., 0, z};
     std::shared_ptr<Acts::Transform3D>   transform = std::make_shared<Acts::Transform3D>(translation);
 
     std::shared_ptr<Acts::RadialBounds> radialBounds =
         std::make_shared<Acts::RadialBounds>(10., 120.);
-    SuperSimpleDetElement* myDetElem =
-        new SuperSimpleDetElement(Identifier(z), transform, radialBounds, 0.0001);
+    //SuperSimpleDetElement* myDetElem =
+    //    new SuperSimpleDetElement(Identifier(z), transform, radialBounds, 0.0001);
 
 
-    const Acts::Surface* cylinderSurface = &(myDetElem->surface());
+    const Acts::Surface* cylinderSurface = new Acts::DiscSurface(identityTransform, 0, 100);//&(myDetElem->surface());
     auto bp = std::make_unique<BinnedArrayXD<const Surface*>>(cylinderSurface);
     Acts::LayerPtr cylinderLayer =
         Acts::DiscLayer::create(transform, radialBounds, std::move(bp), 0, nullptr, Acts::passive);
@@ -100,7 +80,7 @@ std::shared_ptr<Acts::TrackingGeometry> buildSuperSimpleDetector() {
   Acts::LayerArrayCreator lc;
   auto la = lc.layerArray(layerVector, 0, 250, Acts::arbitrary, Acts::binZ);
   Acts::TrackingVolumePtr trackingVolume = Acts::TrackingVolume::create(
-      identityTransform, cylinderVolumeBounds, material,
+      identityTransform, cylinderVolumeBounds, nullptr,
       // nullptr, 
       std::move(la),
        //layerVector,
@@ -150,7 +130,6 @@ std::shared_ptr<Acts::TrackingGeometry> buildSuperSimpleDetector() {
   std::cout << "tv array size: " <<  tv_array->arrayObjects().size() << std::endl;
   Acts::TrackingVolumePtr worldTrackingVolume = Acts::TrackingVolume::create(identityTransform,
   worldCylinderVolumeBounds, tv_array, "WorldVolume");
-  //worldTrackingVolume->sign(Acts::Global);
 
   */
 

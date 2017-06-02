@@ -6,7 +6,7 @@
 
 int main(int argn, char** argv) {
     std::shared_ptr<const Acts::TrackingGeometry> geo = 
-    Acts::buildGenericDetector(Acts::Logging::VERBOSE, Acts::Logging::VERBOSE, Acts::Logging::VERBOSE, 2);
+    Acts::buildGenericDetector(Acts::Logging::VERBOSE, Acts::Logging::VERBOSE, Acts::Logging::VERBOSE, 3);
 
       std::string filename(argv[1]);
       std::map<std::string, std::vector<double>> config;

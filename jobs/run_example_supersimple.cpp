@@ -11,12 +11,10 @@ int main() {
 
     {
       std::map<std::string, std::vector<double>> config;
-      #include "phi_slice.ipp"
       run(geo, config, "exampleSuperSimple_phislice");
     }
     {
       std::map<std::string, std::vector<double>> config;
-      #include "eta_slice.ipp"
       run(geo, config, "exampleSuperSimple_etaslice");
     }
 

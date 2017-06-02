@@ -137,6 +137,7 @@ std::vector<std::vector<Acts::Vector3D>> modulePositionsDisc(double z,
       lastHl = mhlength;
       // and register the radial boarder
       radialBoarders.push_back(lastR + 2 * lastHl - 0.5 * lastOl);
+      std::cout << lastR << std::endl;
     }
   }
   // now prepare the return method
@@ -147,6 +148,7 @@ std::vector<std::vector<Acts::Vector3D>> modulePositionsDisc(double z,
     // fill the ring positions
     mPositions.push_back(modulePositionsRing(rz, radii[ir], phiStagger, discBinning[ir]));
   }
+  std::cout << "leaving"<< std::endl;
   return mPositions;
 }
 

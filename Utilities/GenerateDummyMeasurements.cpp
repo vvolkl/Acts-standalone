@@ -10,7 +10,9 @@ std::vector<FitMeas_t> generateDummyMeasurements(BoundParameters theTrackParamet
 
   ExtrapolationCell<TrackParameters> exCell(theTrackParameters);
   exCell.addConfigurationMode(ExtrapolationMode::CollectSensitive);
-  exCell.addConfigurationMode(ExtrapolationMode::StopAtBoundary);
+  //exCell.addConfigurationMode(ExtrapolationMode::CollectMaterial);
+  //exCell.pathLimit = 500;
+  //exCell.addConfigurationMode(ExtrapolationMode::StopAtBoundary);
   theExtrapolationEngine->extrapolate(exCell);
 
   std::vector<FitMeas_t> vMeasurements;
@@ -26,9 +28,9 @@ std::vector<FitMeas_t> generateDummyMeasurements(BoundParameters theTrackParamet
 
     auto lPtr = tp->referenceSurface().associatedLayer();
     auto detPtr = tp->referenceSurface().associatedDetectorElement();
-    if (tp->referenceSurface().type() == Surface::Plane || tp->referenceSurface().type() == Surface::Disc) {
-    }
-    if (detPtr != nullptr) {
+    //if (tp->referenceSurface().type() == Surface::Plane || tp->referenceSurface().type() == Surface::Disc) {
+   // if ( tp->referenceSurface().type() == Surface::Disc) {}
+    //if (lPtr != nullptr) {
     auto cov2 = tp->covariance();
     std::cout << "parameters \t" 
      << (tp->parameters()).format(CommaInitFmt) << std::endl;
@@ -46,8 +48,8 @@ std::vector<FitMeas_t> generateDummyMeasurements(BoundParameters theTrackParamet
       cov << std1 * std1, 0, 0, std2 * std2;
 
       vMeasurements.push_back(Meas_t<eLOC_0, eLOC_1>(tp->referenceSurface(), id, std::move(cov), l1, l2));
-      ++id;
-    }
+      ++id; 
   }
+    
   return vMeasurements;
 }

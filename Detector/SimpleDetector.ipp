@@ -10,10 +10,12 @@
 // beam pipe
 //-------------------------------------------------------------------------------------
 // configure the beam pipe layer builder
+  Material oMaterial(95.7, 465.2, 28.03, 14., 2.32e-3);
+  MaterialProperties omProperties(1., 95.7, 465.2, 28.03, 14., 2.32e-3);
 PassiveLayerBuilder::Config bplConfig;
 bplConfig.layerIdentification = "BeamPipe";
 bplConfig.centralLayerRadii = std::vector<double>(1, 15.);
-bplConfig.centralLayerHalflengthZ = std::vector<double>(1, 400.);
+bplConfig.centralLayerHalflengthZ = std::vector<double>(1, 810.);
 bplConfig.centralLayerThickness = std::vector<double>(1, 0.00001);
 bplConfig.centralLayerMaterial = {Material(352.8, 407., 9.012, 4., 1.848e-3)};
 auto beamPipeBuilder =
@@ -62,11 +64,11 @@ plbConfig.centralLayerMaterialConcentration = std::vector<int>(l_numLayers, 1);
 plbConfig.centralLayerMaterialProperties = {pcmProperties, pcmProperties, pcmProperties, pcmProperties, pcmProperties, pcmProperties};
 plbConfig.centralModuleTiltPhi = std::vector<double>(l_numLayers,0.);
 plbConfig.centralModuleHalfY = std::vector<double>(l_numLayers, 41.);
-plbConfig.centralModuleThickness = {0.15, 0.05, 0.15, 0.15, 0.15, 0.15};
-plbConfig.centralModuleReadoutBinsX = {336, 336, 226, 226, 226,226};
-plbConfig.centralModuleReadoutBinsY = {1280, 1280, 1280, 1280, 1280, 1280};
-plbConfig.centralModuleReadoutSide = {-1, -1, -1, -1, -1,-1};
-plbConfig.centralModuleLorentzAngle = {0.12, 0.12, 0.12, 0.12, 0.12, 0.12};
+plbConfig.centralModuleThickness = std::vector<double>(l_numLayers, 0.15);
+plbConfig.centralModuleReadoutBinsX = std::vector<long unsigned int>(l_numLayers, 226);
+plbConfig.centralModuleReadoutBinsY = std::vector<long unsigned int>(l_numLayers, 1280);
+plbConfig.centralModuleReadoutSide = std::vector<int>(l_numLayers, -1);
+plbConfig.centralModuleLorentzAngle = std::vector<double>(l_numLayers, 0.12);
 // no frontside/backside
 plbConfig.centralModuleFrontsideStereo = {};
 plbConfig.centralModuleBacksideStereo = {};
@@ -83,6 +85,72 @@ for (size_t plb = 0; plb < plbConfig.centralLayerRadii.size(); ++plb) {
                                                            plbConfig.centralModuleBinningSchema[plb]));
 }
 plbConfig.centralModulePositions = centralModulePositions;
+  std::vector<double> imrMinHx = {16.4, 24.2, 32.2, 40., 48.};
+  std::vector<double> imrMaxHx = {24.2, 32.2, 40.0, 48., 56.};
+
+  // simplified strixels readout
+  std::vector<size_t> imrReadoutBinsX = {968, 1288, 1600, 1800, 2000};  // 50 um pitch
+
+  std::vector<int>      imPhiBins   = {42, 58, 72, 90, 102};
+  size_t inRings = imPhiBins.size();
+  std::vector<double>   imThickness = std::vector<double>(inRings, 0.2);
+  std::vector<Material> imMaterial  = std::vector<Material>(inRings, oMaterial);
+  std::vector<double>   imfStereo   = std::vector<double>(inRings, -0.02);
+  std::vector<double>   imbStereo   = std::vector<double>(inRings, 0.02);
+  std::vector<double>   imfbGap     = std::vector<double>(inRings,  2.);
+  std::vector<size_t> imrReadoutBinsY = std::vector<size_t>(inRings, 60);       // 1.6 mm strixels
+  std::vector<int>    imrReadoutSide  = std::vector<int>(inRings, 1.);
+  std::vector<double> imrHy    = std::vector<double>(inRings, 48.);
+  std::vector<double> imrLorentzAngle = std::vector<double>(inRings, 0.);
+
+  plbConfig.posnegLayerBinMultipliers = {1, 2};
+  plbConfig.posnegLayerPositionsZ = {1000, 1200, 1500, 1800, 2200};
+  size_t nposnegs                  = plbConfig.posnegLayerPositionsZ.size();
+  plbConfig.posnegLayerEnvelopeR  = std::vector<double>(nposnegs, 5.);
+  plbConfig.posnegLayerMaterialConcentration = std::vector<int>(nposnegs, 1);
+  plbConfig.posnegLayerMaterialProperties
+      = std::vector<MaterialProperties>(nposnegs, omProperties);
+  plbConfig.posnegModuleMinHalfX
+      = std::vector<std::vector<double>>(nposnegs, imrMinHx);
+  plbConfig.posnegModuleMaxHalfX
+      = std::vector<std::vector<double>>(nposnegs,imrMaxHx);
+  plbConfig.posnegModuleHalfY
+      = std::vector<std::vector<double>>(nposnegs, imrHy);
+  plbConfig.posnegModulePhiBins
+      = std::vector<std::vector<int>>(nposnegs, imPhiBins);
+  plbConfig.posnegModuleThickness
+      = std::vector<std::vector<double>>(nposnegs, imThickness);
+
+  plbConfig.posnegModuleReadoutBinsX
+      = std::vector<std::vector<size_t>>(nposnegs, imrReadoutBinsX);
+  plbConfig.posnegModuleReadoutBinsY
+      = std::vector<std::vector<size_t>>(nposnegs, imrReadoutBinsY);
+  plbConfig.posnegModuleReadoutSide
+      = std::vector<std::vector<int>>(nposnegs, imrReadoutSide);
+  plbConfig.posnegModuleLorentzAngle
+      = std::vector<std::vector<double>>(nposnegs, imrLorentzAngle);
+
+  plbConfig.posnegModuleMaterial
+      = std::vector<std::vector<Material>>(nposnegs, imMaterial);
+  plbConfig.posnegModuleFrontsideStereo
+      = std::vector<std::vector<double>>(nposnegs, imfStereo);
+  plbConfig.posnegModuleBacksideStereo
+      = std::vector<std::vector<double>>(nposnegs, imbStereo);
+  plbConfig.posnegModuleBacksideGap
+      = std::vector<std::vector<double>>(nposnegs, imfbGap);
+  // mPositions
+  std::vector<std::vector<std::vector<Vector3D>>> iposnegModulePositions;
+  for (size_t id = 0; id < plbConfig.posnegLayerPositionsZ.size(); ++id) {
+    iposnegModulePositions.push_back(
+        modulePositionsDisc(plbConfig.posnegLayerPositionsZ[id],
+                            2.0,
+                            0.5,
+                            30.,
+                            450.,
+                            plbConfig.posnegModulePhiBins[id],
+                            plbConfig.posnegModuleHalfY[id]));
+  }
+  plbConfig.posnegModulePositions = iposnegModulePositions;
 
 // define the builder
 auto pixelLayerBuilder =
@@ -113,35 +181,33 @@ volumeBuilders.push_back(pixelVolumeBuilder);
   // envelope double
   std::pair<double, double> oEnvelope(2., 2.);
   // Layer material properties - thickness, X0, L0, A, Z, Rho
-  MaterialProperties omProperties(1., 95.7, 465.2, 28.03, 14., 2.32e-3);
   // Module material - X0, L0, A, Z, Rho
-  Material oMaterial(95.7, 465.2, 28.03, 14., 2.32e-3);
   olbConfig.approachSurfaceEnvelope = 5.;
 
   // configure the central barrel
   olbConfig.centralLayerBinMultipliers = {1, 1};
-  olbConfig.centralLayerRadii          = {607.6, 807.3, 969.7};
-  olbConfig.centralModuleBinningSchema = {{38, 30}, {50, 30}, {60, 30}};
-  olbConfig.centralLayerMaterialConcentration = {1, 1, 1};
+  olbConfig.centralLayerRadii          = {607.6, 807.3, 969.7, 1200, 1400, 1600};
+  olbConfig.centralModuleBinningSchema = {{38, 40}, {50, 40}, {60, 40}, {70, 40}, {80, 40}, {90, 40}};
+  olbConfig.centralLayerMaterialConcentration = {1, 1, 1, 1, 1, 1};
   olbConfig.centralLayerMaterialProperties
-      = {omProperties, omProperties, omProperties};
+      = {omProperties, omProperties, omProperties, omProperties, omProperties, omProperties};
   l_numLayers = olbConfig.centralLayerRadii.size();
   olbConfig.centralLayerEnvelopes      = std::vector<std::pair<double,double>>(l_numLayers, oEnvelope);
-  olbConfig.centralModuleTiltPhi       = {0.0, 0.0, 0.0};
+  olbConfig.centralModuleTiltPhi       = std::vector<double>(l_numLayers, 0.);
   olbConfig.centralModuleHalfX         = std::vector<double>(l_numLayers, 51.2);
   olbConfig.centralModuleHalfY         = std::vector<double>(l_numLayers, 51.2);
-  olbConfig.centralModuleThickness     = {0.25, 0.25, 0.25};
+  olbConfig.centralModuleThickness     = std::vector<double>(l_numLayers, 0.25);
 
-  olbConfig.centralModuleReadoutBinsX = {728, 728, 728};  // 50 um pitch
-  olbConfig.centralModuleReadoutBinsY = {85, 85, 85};     // 1.6 mm strixels
-  olbConfig.centralModuleReadoutSide  = {1, 1, 1};
-  olbConfig.centralModuleLorentzAngle = {0.12, 0.12, 0.12};
+  olbConfig.centralModuleReadoutBinsX =  std::vector<size_t>(l_numLayers, 728);  // 50 um pitch
+  olbConfig.centralModuleReadoutBinsY = std::vector<size_t>(l_numLayers, 85);     // 1.6 mm strixels
+  olbConfig.centralModuleReadoutSide  = std::vector<int>(l_numLayers,1);
+  olbConfig.centralModuleLorentzAngle = std::vector<double>(l_numLayers, 0.12);
 
   olbConfig.centralModuleMaterial
-    = {oMaterial, oMaterial, oMaterial};
-  olbConfig.centralModuleFrontsideStereo = {-0.02, -0.02, -0.02};
-  olbConfig.centralModuleBacksideStereo  = {0.02, 0.02, 0.02};
-  olbConfig.centralModuleBacksideGap     = {2., 2., 2.};
+    = std::vector<Material>(l_numLayers, oMaterial);
+  olbConfig.centralModuleFrontsideStereo = std::vector<double>(l_numLayers,  -0.02);
+  olbConfig.centralModuleBacksideStereo  = std::vector<double>(l_numLayers, 0.02);
+  olbConfig.centralModuleBacksideGap     = std::vector<double>(l_numLayers,  2.);
   // mPositions
   //std::vector<std::vector<Vector3D>> centralModulePositions;
   centralModulePositions.clear();
@@ -159,58 +225,66 @@ volumeBuilders.push_back(pixelVolumeBuilder);
   olbConfig.centralModulePositions = centralModulePositions;
 
   // configure the endcaps
-  std::vector<double> mrMinHx = {16.4, 24.2, 32.2};
-  std::vector<double> mrMaxHx = {24.2, 32.2, 40.0};
-  std::vector<double> mrHy    = {48., 48., 48.};
 
   // simplified strixels readout
-  std::vector<size_t> mrReadoutBinsX = {968, 1288, 1600};  // 50 um pitch
-  std::vector<size_t> mrReadoutBinsY = {60, 60, 60};       // 1.6 mm strixels
-  std::vector<int>    mrReadoutSide  = {1, 1, 1};
-  std::vector<double> mrLorentzAngle = {0., 0., 0.};
 
-  std::vector<int>      mPhiBins   = {42, 58, 72};
-  std::vector<double>   mThickness = {0.2, 0.2, 0.2};
-  std::vector<Material> mMaterial  = {oMaterial, oMaterial, oMaterial};
-  std::vector<double>   mfStereo   = {-0.02, -0.02, -0.02};
-  std::vector<double>   mbStereo   = {0.02, 0.02, 0.02};
-  std::vector<double>   mfbGap     = {2., 2., 2.};
+  std::vector<int>      mPhiBins   = std::vector<int>(6, 50); // {42, 58, 72, 90, 102,108,116};//,122,130,138, 146, 152};
+  size_t nRings = mPhiBins.size();
+  std::vector<double> mrMinHx = {};
+
+  std::vector<double> mrMaxHx = {};
+  for (size_t i = 0; i < nRings; ++i) {
+    std::cout << i << std::endl;
+    mrMinHx.push_back(12 + 18. * i);
+    mrMaxHx.push_back(24 + 18. * i);
+  }
+  std::vector<size_t> mrReadoutBinsX = std::vector<size_t>(nRings, 2000);  // 50 um pitch
+  std::vector<double>   mThickness = std::vector<double>(nRings, 0.2);
+  std::vector<Material> mMaterial  = std::vector<Material>(nRings, oMaterial);
+  std::vector<double>   mfStereo   = std::vector<double>(nRings, -0.02);
+  std::vector<double>   mbStereo   = std::vector<double>(nRings, 0.02);
+  std::vector<double>   mfbGap     = std::vector<double>(nRings,  2.);
+  std::vector<size_t> mrReadoutBinsY = std::vector<size_t>(nRings, 60);       // 1.6 mm strixels
+  std::vector<int>    mrReadoutSide  = std::vector<int>(nRings, 1.);
+  std::vector<double> mrHy    = std::vector<double>(nRings, 140.);
+  std::vector<double> mrLorentzAngle = std::vector<double>(nRings, 0.);
 
   olbConfig.posnegLayerBinMultipliers = {1, 2};
-  olbConfig.posnegLayerPositionsZ = {1880., 2100., 2300., 2550., 3800., 3200.};
-  size_t nposnegs                  = olbConfig.posnegLayerPositionsZ.size();
-  olbConfig.posnegLayerEnvelopeR  = std::vector<double>(nposnegs, 5.);
-  olbConfig.posnegLayerMaterialConcentration = std::vector<int>(nposnegs, 1);
+  olbConfig.posnegLayerPositionsZ = {2600, 2900., 3300., 3800., 4300., 5000.};
+  //olbConfig.posnegLayerPositionsZ = {2600, 2900., 3300., 3800., 4300., 5000.};
+  size_t onposnegs                  = olbConfig.posnegLayerPositionsZ.size();
+  olbConfig.posnegLayerEnvelopeR  = std::vector<double>(onposnegs, 5.);
+  olbConfig.posnegLayerMaterialConcentration = std::vector<int>(onposnegs, 1);
   olbConfig.posnegLayerMaterialProperties
-      = std::vector<MaterialProperties>(nposnegs, omProperties);
+      = std::vector<MaterialProperties>(onposnegs, omProperties);
   olbConfig.posnegModuleMinHalfX
-      = std::vector<std::vector<double>>(nposnegs, mrMinHx);
+      = std::vector<std::vector<double>>(onposnegs, mrMinHx);
   olbConfig.posnegModuleMaxHalfX
-      = std::vector<std::vector<double>>(nposnegs, mrMaxHx);
+      = std::vector<std::vector<double>>(onposnegs, mrMaxHx);
   olbConfig.posnegModuleHalfY
-      = std::vector<std::vector<double>>(nposnegs, mrHy);
+      = std::vector<std::vector<double>>(onposnegs, mrHy);
   olbConfig.posnegModulePhiBins
-      = std::vector<std::vector<int>>(nposnegs, mPhiBins);
+      = std::vector<std::vector<int>>(onposnegs, mPhiBins);
   olbConfig.posnegModuleThickness
-      = std::vector<std::vector<double>>(nposnegs, mThickness);
+      = std::vector<std::vector<double>>(onposnegs, mThickness);
 
   olbConfig.posnegModuleReadoutBinsX
-      = std::vector<std::vector<size_t>>(nposnegs, mrReadoutBinsX);
+      = std::vector<std::vector<size_t>>(onposnegs, mrReadoutBinsX);
   olbConfig.posnegModuleReadoutBinsY
-      = std::vector<std::vector<size_t>>(nposnegs, mrReadoutBinsY);
+      = std::vector<std::vector<size_t>>(onposnegs, mrReadoutBinsY);
   olbConfig.posnegModuleReadoutSide
-      = std::vector<std::vector<int>>(nposnegs, mrReadoutSide);
+      = std::vector<std::vector<int>>(onposnegs, mrReadoutSide);
   olbConfig.posnegModuleLorentzAngle
-      = std::vector<std::vector<double>>(nposnegs, mrLorentzAngle);
+      = std::vector<std::vector<double>>(onposnegs, mrLorentzAngle);
 
   olbConfig.posnegModuleMaterial
-      = std::vector<std::vector<Material>>(nposnegs, mMaterial);
+      = std::vector<std::vector<Material>>(onposnegs, mMaterial);
   olbConfig.posnegModuleFrontsideStereo
-      = std::vector<std::vector<double>>(nposnegs, mfStereo);
+      = std::vector<std::vector<double>>(onposnegs, mfStereo);
   olbConfig.posnegModuleBacksideStereo
-      = std::vector<std::vector<double>>(nposnegs, mbStereo);
+      = std::vector<std::vector<double>>(onposnegs, mbStereo);
   olbConfig.posnegModuleBacksideGap
-      = std::vector<std::vector<double>>(nposnegs, mfbGap);
+      = std::vector<std::vector<double>>(onposnegs, mfbGap);
   // mPositions
   std::vector<std::vector<std::vector<Vector3D>>> posnegModulePositions;
   for (size_t id = 0; id < olbConfig.posnegLayerPositionsZ.size(); ++id) {
@@ -218,8 +292,8 @@ volumeBuilders.push_back(pixelVolumeBuilder);
         modulePositionsDisc(olbConfig.posnegLayerPositionsZ[id],
                             2.0,
                             0.5,
-                            220.,
-                            500.,
+                            30.,
+                            1650.,
                             olbConfig.posnegModulePhiBins[id],
                             olbConfig.posnegModuleHalfY[id]));
   }
