@@ -1,10 +1,12 @@
-range eta 
-0 3.5 0.1
+vector eta 
+0
 vector phi 
 0.5
 vector uncertainty 
-1 
+0.00001 
 vector pT
-1 10 100 1000
+100
 vector std1 
 1
+vector initialerror
+0.9 1 1.1

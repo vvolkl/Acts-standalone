@@ -10,6 +10,7 @@ import os
 filename = sys.argv[1]
 alldat = np.loadtxt(filename)
 pts = alldat[:,0]
+uncertainties = alldat[:, 9]
 markers=['s', '+', 'd', '.', 'o', '*']
 
 
@@ -17,31 +18,23 @@ for i, pt in enumerate(np.unique(pts)):
   dat = alldat[pts==pt]
   eta = np.arctanh(dat[:,2] / np.sqrt(dat[:,0]**2 + dat[:,2]**2))
   plt.figure("pT fit result")
-  plt.semilogy(eta, dat[:,1], 'o', label=pt)
+  plt.loglog(uncertainties, dat[:,1], 'o', label=pt)
   plt.legend(title=r"true $p_T$")
   plt.figure("deltaPOverP")
   OneOverP = 1. / np.sqrt(dat[:, 0]**2 + dat[:,2]**2)
   plt.xlabel(r"$\eta$")
   plt.ylabel(r"$\frac {\delta p} { p}$")
-  plt.semilogy(eta, dat[:, 4] / OneOverP, marker='+', label=pt)
+  plt.loglog(uncertainties, dat[:, 4] / OneOverP, marker='+', label=pt)
   plt.figure("pT fit result")
   plt.xlabel(r"$\eta$")
   plt.ylabel(r"$p_T$ fit")
   plt.legend(title=r"true $p_T$")
   plt.figure("cov Pt")
-  plt.semilogy(eta, dat[:, 4], label=pt, alpha=0.4, marker=markers[i])
+  plt.loglog(uncertainties, dat[:, 4], label=pt, alpha=0.4, marker=markers[i])
   plt.xlabel(r"$\eta$")
   plt.ylabel(r"$\delta p_T$")
   plt.legend(title=r"true $p_T$")
 
-#plt.title("FCChh TkLayout Option 3 v02 - Barrel Only - Prelim Full Reco ")
-  #plt.savefig("PtTrue.pdf")
-  #plt.savefig("PtTrue.png")
-#plt.legend(title=r"true $p_T$")
- 
-#plt.title("FCChh TkLayout Option 3 v02 - Barrel Only - Prelim Full Reco ")
-  #plt.savefig("deltaP.pdf")
-  #plt.savefig("deltaP.png")
   plt.figure("deltaPt")
   plt.semilogy(eta, dat[:, 4], marker='+', label=pt)
   

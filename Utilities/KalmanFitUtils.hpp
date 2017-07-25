@@ -63,8 +63,10 @@ std::shared_ptr<IExtrapolationEngine> initExtrapolator(const std::shared_ptr<con
 std::vector<FitMeas_t> generateDummyMeasurements(BoundParameters theTrackParameters,
                                                  std::shared_ptr<IExtrapolationEngine> theExtrapolationEngine,
                                                  std::shared_ptr<const Acts::TrackingGeometry> geo,
+                                                 double std1,
                                                  const Acts::Layer* startLayer = nullptr,
-                                                 std::ostream& log = std::cout);
+                                                 std::ostream& log = std::cout
+                                                 );
 
 void dumpTrackingVolume(const Acts::TrackingVolume* vol);
 void dumpTrackingLayer(const Acts::Layer* layer);

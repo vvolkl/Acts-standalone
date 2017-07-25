@@ -6,11 +6,12 @@ import os
 logfiles = sys.argv[1:]
 for logfile in logfiles:
   print logfile
-  os.system("grep covariance " + logfile +  " > tmp.txt" )
-  os.system("sed -i -- 's/covariance//g' tmp.txt")
+  #os.system("grep covariance " + logfile +  " > tmp.txt" )
+  #os.system("sed -i -- 's/covariance//g' tmp.txt")
 
 
-  dat = np.loadtxt("tmp.txt")
+  #dat = np.loadtxt("tmp.txt")
+  dat = np.loadtxt(sys.argv[1])
   np.set_printoptions(linewidth=120)
   diag = np.eye(5).reshape(25)
   diag_indices = np.nonzero(diag)[0]

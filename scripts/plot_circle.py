@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 from numpy import *
 from scipy import optimize
 from matplotlib import pyplot as plt, cm, colors
@@ -76,12 +77,14 @@ def plot_data_circle(x,y, xc, yc, R):
     plt.grid()
 
 if __name__ == "__main__":
-    dat = np.loadtxt("test.dat")
+    filename = sys.argv[1]
+    dat = np.loadtxt(filename)
     x = dat[:,0]
     y = dat[:,1]
     xc, yc, R, residu = leastsq_circle(x, y)
     #xc, yc, R, residu = leastsq_algebraic(x, y)
     print "Radius: ", R
     plot_data_circle(x,y, xc, yc, R)
+    plt.savefig(filename.replace(".dat", "_circle.png"))
     plt.show()
 	
