@@ -5,6 +5,6 @@ vector phi
 vector uncertainty 
 0.00001 
 vector pT
-0.1 1 10 100
+0.1 1 10 100 100000
 vector std1 
 1

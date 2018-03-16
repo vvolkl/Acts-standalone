@@ -1,7 +1,6 @@
 
 
 #include "ACTS/Detector/TrackingGeometry.hpp"
-#include "ACTS/Examples/GenericLayerBuilder.hpp"
 #include "ACTS/Material/Material.hpp"
 #include "ACTS/Tools/CylinderVolumeBuilder.hpp"
 #include "ACTS/Tools/CylinderVolumeHelper.hpp"
@@ -30,7 +29,6 @@
 #include <vector>
 
 #include "DetCylinderSurface.hpp"
-#include "SuperSimpleDetElement.hpp"
 #include "SuperSimpleDetector.hpp"
 
 using namespace Acts;

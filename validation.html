@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="/home/vavolkl/pandoc.css" type="text/css" />
+</head>
+<body>
+<h1 id="validation-of-the-acts-fitting-package">Validation of the ACTS-Fitting Package</h1>
+<h2 id="description-of-test-setup">Description of test setup:</h2>
+<ul>
+<li>ACTS at revision <code>4f20562371cdd44fde5a5cdadd7999b3b5f6c3e8</code>, from June 8th 2017 ( newer releases cannot be used to test because of issue ACTS-333 )</li>
+<li>Platform: <code>x86_64-ubuntu1604-gcc62</code>, dependencies taken from ACTS-supplied docker image</li>
+<li>Geometries and initial parameters: see below</li>
+</ul>
+<h2 id="tests-with-cylindrical-barrel">Tests with Cylindrical Barrel</h2>
+<p>For a first round of tests the simplest relevant geometry is used: a set of centered cylinder barrels to represent equidistant detector layers. The concrete dimensions are chosen to be in the same order of those a realistic detector, so the fit results need not be scaled. Figure 1. shows the layout of this test.</p>
+<p><img src="data/exampleSuperSimpleBarrel-phiScan_hits_x-y.png" /> <img src="data/exampleSuperSimpleBarrel-etaScan_hits_r-z.png" /></p>
+<h3 id="validation-of-extrapolation-track-curvature">Validation of Extrapolation Track Curvature</h3>
+<p>A simple but essential test is comparing the extrapolated track to the analytical result for the curvature <span class="math inline"><em>R</em></span> of the track of a particle with charge <span class="math inline"><em>q</em></span> and transverse momentum <span class="math inline"><em>p</em><sub><em>T</em></sub></span> in a magnetic field in Z-direction with magnitude <span class="math inline"><em>B</em></span></p>
+<p><br /><span class="math display">$$ R [\text{cm}] = \frac{p_T[\text{GeV}]}{0.003 \cdot q[\text{e}] \cdot B [\text{T}]}, $$</span><br /></p>
+<p>compare reference [1]. Choosing <span class="math inline"><em>B</em> = 2<em>T</em></span>, <span class="math inline"><em>p</em><sub><em>T</em></sub> = 0.1[GeV]</span>, we expect the track in the x-y plane to resemble a circle of radius <span class="math inline">≈166[<em>m</em><em>m</em>]</span>. The following circle fit of a single track with the previously mentioned parameters shows that the ACTS extrapolation is consistent with these expectations:</p>
+<p><img src="data/exampleSuperSimpleBarrel-singleTrackLowPt_hits_x-y.png" /> <img src="data/exampleSuperSimpleBarrel-singleTrackLowPt_circle.png" /></p>
+<p>The test can be scaled to a high-momentum <span class="math inline"><em>p</em><sub><em>T</em></sub> = 100</span> [GeV] track, which also gives reasonable results</p>
+<p><img src="data/exampleSuperSimpleBarrel-singleTrack_hits_x-y.png" /> <img src="data/exampleSuperSimpleBarrel-singleTrack_hits_circle.png" /></p>
+<h3 id="fitting-perfect-tracks">Fitting perfect tracks</h3>
+<p>The extrapolation capabilities of ACTS can be used to quickly generate pseudo-measurements as input to the fitter. For this test, the parameters chosen are:</p>
+<ul>
+<li><span class="math inline"><em>p</em><sub><em>T</em></sub></span>: .1, 1, 10, 100 [GeV]</li>
+<li><span class="math inline"><em>φ</em></span>: <span class="math inline">0.5 ⋅ <em>π</em></span></li>
+<li><span class="math inline"><em>η</em></span> <span class="math inline">0…2.5</span> in steps of 0.1</li>
+<li>vertex location: (0,0,0)</li>
+</ul>
+<p>The covariance matrix corresponding to these track parameters is initalized as a <span class="math inline">5 × 5</span> unit diagonal matrix. This gives the following result for the fit of tracks composed of six pseudo-measurements on the cylinder barrels:</p>
+<p><img src="data/exampleSuperSimpleBarrel-etaScan_parameters_covPt.png" /> <img src="data/exampleSuperSimpleBarrel-etaScan_parameters_deltaP.png" /></p>
+<h3 id="effect-of-initial-covariance">Effect of initial covariance</h3>
+<p>The Kalman Filter requires a covariance for the initial track parameters. This must be estimated somehow, but can usually safely be set to a very large number. The following figure shows that the magnitude of the initial covariance matrix has no effect on the fit result except when the measurmement has a very big uncertainty</p>
+<div class="figure">
+<img src="data/exampleSuperSimpleBarrel-uncertainties_parameters_covPt.png" />
+
+</div>
+</body>
+</html>

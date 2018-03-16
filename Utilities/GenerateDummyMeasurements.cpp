@@ -14,6 +14,7 @@ std::vector<FitMeas_t> generateDummyMeasurements(BoundParameters theTrackParamet
   ExtrapolationCell<TrackParameters> exCell(theTrackParameters);
   exCell.addConfigurationMode(ExtrapolationMode::CollectSensitive);
   exCell.addConfigurationMode(ExtrapolationMode::CollectMaterial);
+  exCell.addConfigurationMode(ExtrapolationMode::CollectPassive);
   //exCell.pathLimit = 500;
   //exCell.addConfigurationMode(ExtrapolationMode::StopAtBoundary);
   theExtrapolationEngine->extrapolate(exCell);

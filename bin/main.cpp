@@ -6,7 +6,6 @@
 
 #include "ACTS/Detector/TrackingGeometry.hpp"
 #include "ACTS/EventData/Measurement.hpp"
-#include "ACTS/Examples/BuildGenericDetector.hpp"
 #include "ACTS/Extrapolation/ExtrapolationCell.hpp"
 #include "ACTS/Extrapolation/ExtrapolationEngine.hpp"
 #include "ACTS/Extrapolation/IExtrapolationEngine.hpp"
@@ -74,9 +73,9 @@ void run(std::shared_ptr<const Acts::TrackingGeometry> geo, std::map<std::string
           double x = 0;
           double y = 0;
           double z = 0;
-          double px = pT * cos(phi);
-          double py = pT * sin(phi);
-          double pz = pZ;  // pT / tan(theta);
+          double px = pT * cos(phi) * Acts::units::_GeV;
+          double py = pT * sin(phi) * Acts::units::_GeV;
+          double pz = pZ * Acts::units::_GeV;  // pT / tan(theta);
           double q = 1;    //(charge != 0) ? charge : +1;
           Vector3D pos(x, y, z);
           Vector3D mom(px, py, pz);
