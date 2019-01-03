@@ -1,9 +1,9 @@
 
-#ifndef ACTS_SIMPLEDETECTOR_H
-#define ACTS_SIMPLEDETECTOR_H 1
+#ifndef Acts_SIMPLEDETECTOR_H
+#define Acts_SIMPLEDETECTOR_H 1
 
-#include "ACTS/Utilities/Definitions.hpp"
-#include "ACTS/Utilities/Logger.hpp"
+#include "Acts/Utilities/Definitions.hpp"
+#include "Acts/Utilities/Logger.hpp"
 #include <memory>
 #include <vector>
 

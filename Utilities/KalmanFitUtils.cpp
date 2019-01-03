@@ -21,6 +21,7 @@ void dumpTrackingVolume(const Acts::TrackingVolume* vol) {
 }
 
 void dumpTrackingLayer(const Acts::Layer* layer) {
+  /*
   std::cout << "\t\t layer has geoID " << layer->geoID() << std::endl;
   auto surfArr = layer->surfaceArray();
 
@@ -31,6 +32,7 @@ void dumpTrackingLayer(const Acts::Layer* layer) {
       std::cout << "\t\t\t" << s << std::endl;
     }
   }
+  */
 }
 
 MyExtrapolator::MyExtrapolator(std::shared_ptr<const IExtrapolationEngine> exEngine)
@@ -56,15 +58,17 @@ MyCache MyExtrapolator::operator()(const FitMeas_t& m, const TrackParameters& tp
   exCell->addConfigurationMode(ExtrapolationMode::FATRAS);
   exCell->addConfigurationMode(ExtrapolationMode::CollectJacobians);
   //(*exCell).pathLimit=500;
+  MyCache c;
+  /*
   const Surface& sf = getSurface(m);
 
   m_exEngine->extrapolate(*exCell, &sf);
-  MyCache c;
   auto j = exCell->extrapolationSteps.back().transportJacobian.release();
   c.jacobian.reset(new KF::Step<long int>::JacobianMatrix(*j));
   auto pars = static_cast<const BoundParameters*>(exCell->leadParameters->clone());
   c.parameters.reset(pars);
 
+  */
   return c;
 };
 

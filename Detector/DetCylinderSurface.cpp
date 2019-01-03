@@ -1,17 +1,17 @@
-// This file is part of the ACTS project.
+// This file is part of the Acts project.
 //
-// Copyright (C) 2016 ACTS project team
+// Copyright (C) 2016 Acts project team
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 ///////////////////////////////////////////////////////////////////
-// DetCylinderSurface.cpp, ACTS project
+// DetCylinderSurface.cpp, Acts project
 ///////////////////////////////////////////////////////////////////
 
 #include "DetCylinderSurface.hpp"
-#include "ACTS/Surfaces/RealQuadraticEquation.hpp"
+#include "Acts/Surfaces/RealQuadraticEquation.hpp"
 #include <cassert>
 #include <cmath>
 #include <iomanip>

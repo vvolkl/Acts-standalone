@@ -1,21 +1,21 @@
-// This file is part of the ACTS project.
+// This file is part of the Acts project.
 //
-// Copyright (C) 2016 ACTS project team
+// Copyright (C) 2016 Acts project team
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 ///////////////////////////////////////////////////////////////////
-// DetCylinderSurface.h, ACTS project
+// DetCylinderSurface.h, Acts project
 ///////////////////////////////////////////////////////////////////
 
-#ifndef ACTS_SURFACES_DETCYLINDERSURFACE_H
-#define ACTS_SURFACES_DETCYLINDERSURFACE_H 1
+#ifndef Acts_SURFACES_DETCYLINDERSURFACE_H
+#define Acts_SURFACES_DETCYLINDERSURFACE_H 1
 
-#include "ACTS/Surfaces/CylinderBounds.hpp"
-#include "ACTS/Surfaces/Surface.hpp"
-#include "ACTS/Utilities/Definitions.hpp"
+#include "Acts/Surfaces/CylinderBounds.hpp"
+#include "Acts/Surfaces/Surface.hpp"
+#include "Acts/Utilities/Definitions.hpp"
 #include <cmath>
 
 namespace Acts {
@@ -244,4 +244,4 @@ inline const CylinderBounds& DetCylinderSurface::bounds() const { return (*m_bou
 
 }  // end of namespace
 
-#endif  // ACTS_SURFACES_DETCYLINDERSURFACE_H
+#endif  // Acts_SURFACES_DETCYLINDERSURFACE_H
