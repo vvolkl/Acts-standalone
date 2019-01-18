@@ -150,4 +150,57 @@ TEST_CASE( "Factorials are computed", "[factorial]" ) {
                                           0.,
                                           iiv_volumeRadius,
                                           "InnerInnerVolume");
+  ///  inner outer volume
+  auto ioVolume = constructCylinderVolume(surfaceHalfLengthZ,
+                                          iov_surfaceRadius,
+                                          surfaceRstagger,
+                                          surfaceZoverlap,
+                                          layerEnvelope,
+                                          volumeEnvelope,
+                                          iiv_volumeRadius,
+                                          iov_volumeRadius,
+                                          "InnerOuterVolume");
+
+  // now create the Inner Container volume
+  double volumeHalfZ
+      = (4 * surfaceHalfLengthZ - surfaceZoverlap) + volumeEnvelope;
+  /// the inner volume
+  auto iVolume = constructContainerVolume(iiVolume,
+                                          ioVolume,
+                                          iov_volumeRadius,
+                                          volumeHalfZ,
+                                          "InnerVolume");
+
+  // outer volume definitions
+  double ov_surfaceRadius = 150. * Acts::units::_mm;
+  double ov_volumeRadius  = ov_surfaceRadius + 0.5 * surfaceRstagger
+      + layerEnvelope + volumeEnvelope;
+
+  ///  inner outer volume
+  auto oVolume = constructCylinderVolume(surfaceHalfLengthZ,
+                                         ov_surfaceRadius,
+                                         surfaceRstagger,
+                                         surfaceZoverlap,
+                                         layerEnvelope,
+                                         volumeEnvelope,
+                                         iov_volumeRadius,
+                                         ov_volumeRadius,
+                                         "OuterVolume");
+  /// the inner volume
+  auto volume = constructContainerVolume(iVolume,
+                                         oVolume,
+                                         ov_volumeRadius,
+                                         volumeHalfZ,
+                                         "WorldVolume");
+
+  // creating a TrackingGeometry
+  // -> closs the geometry, this should set the GeometryID
+  TrackingGeometry tGeometry(volume);
+  // get the world back
+  auto world = tGeometry.highestTrackingVolume();
+
+    size_t nSurfaces = 0;
+    tGeometry.visitSurfaces([&nSurfaces](const auto*) { nSurfaces++; });
+
+    REQUIRE(nSurfaces == 9);
 }
